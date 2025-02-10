@@ -1,16 +1,13 @@
-<?php
-
-$host = "mysql"; // Le host est le nom du service, présent dans le docker-compose.yml
-$dbname = "my-wonderful-website";
-$charset = "utf8";
-$port = "3306";
-?>
-
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Drenthe College docker web server</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 </head>
 <body>
-<h2>Hello world!</h2>
+
+    <a href=./oefenopdracht1/index.php><h1>Oefenopdracht 1</h1</a>
+    
 </body>
 </html>
