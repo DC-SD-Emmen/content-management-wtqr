@@ -7,7 +7,7 @@ class Database {
    private $serverName = "mysql";
    private $title = "root";
    private $genre = "root";
-   private $dbName = "user_login";
+   private $dbName = "gamelibrary";
    private $conn;
 
  //Functies
@@ -24,6 +24,4 @@ class Database {
       return $this->conn;
    }
 }
-
-?>
 
