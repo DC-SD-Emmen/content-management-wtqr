@@ -17,8 +17,11 @@
                 <li class="community" ><a class="community1" href="https://steamcommunity.com/"
                 target="_explorer.exe">COMMUNITY</a></li>
 
-                <li class="addgame"> <a class="submit" href="http://localhost/eindopdracht/add_game.php"
+                <li class="addgame"> <a class="submit" href="./add_game.php"
                 target="_explorer.exe">ADD GAME</a></li>
+
+                <li class="account"><a class="account1" href="./register.php"
+                target="_explorer.exe">ACCOUNT</a></li> 
             </ul>
 
     <?php

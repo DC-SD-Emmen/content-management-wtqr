@@ -1,36 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add game</title>
-    <link rel='stylesheet' href='eindopdracht.css'>
-    <script src="eindopdracht.js" defer></script>
-</head>
-<body>
-
 <?php 
     spl_autoload_register(function ($class) {
         include 'classes/' . $class . '.php';
     });
 
-    function redirect($url)
-    {
-    if (!headers_sent())
-    {
-        header('LOCATION: '.$url);
-        exit;
-    }
-    else
-    {
-        echo '<script type="text/javascript">';
-        echo 'window.location.href="'.$url.'";';
-        echo '</script>';
-        echo '<noscript>';
-        echo '<meta http-equiv="refresh" content="0;url='.$url.'" />';
-        echo '</noscript>'; exit;
-    }
-    }
 
     $db = new Database();
     $gameManager = new GameManager($db);
@@ -42,7 +14,7 @@
     
         if ($uploadSuccess && $consoleSelected) {
             $gameManager->insertData($_POST, $_FILES['image']['name']);
-            redirect("http://localhost/eindopdracht/index.php");
+            header('Location: index.php');
         }
 
 
@@ -59,19 +31,34 @@ if (!$uploadSuccess) {
     
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add game</title>
+    <link rel='stylesheet' href='eindopdracht.css'>
+    <script src="eindopdracht.js" defer></script>
+</head>
+<body>
+
+
 <div id="topcontainer">    
     <div id="top">        
          <ul>
             <li class="store2" ><a class="store1" href="https://store.steampowered.com/"
             target="_explorer.exe">STORE</a></li>
 
-            <li class="library2"><a class="submit2" href="http://localhost/eindopdracht/index.php"
+            <li class="library2"><a class="submit2" href="./index.php"
             target="_explorer.exe">LIBRARY</a></li>
 
-            <li class="community2" ><a class="community1" href="https://steamcommunity.com/"
+            <li class="community2"><a class="community1" href="https://steamcommunity.com/"
             target="_explorer.exe">COMMUNITY</a></li>
 
             <li class="addgame2">ADD GAME</li> 
+
+            <li class="account2"><a class="account1" href="./register.php"
+            target="_explorer.exe">ACCOUNT</a></li> 
          </ul>
    </div>
 </body> 

@@ -51,7 +51,7 @@
             } else { 
                  // als alle validaties slagen, probeer de game in de database in te voegen
                  //Bind parameter gebruiken we om SQL injection attack te voorkomen.
-                try { 
+                try {
                     $stmt = $this->conn->prepare("INSERT INTO games (title , genre,  platform, release_year, rating, developer, image, description) 
                                                         VALUES (:title , :genre,  :platform, :release_year, :rating, :developer, :image, :description)");
                     $stmt->bindParam(':title', $title);
@@ -63,7 +63,6 @@
                     $stmt->bindParam(':image', $imageName);
                     $stmt->bindParam(':description', $description);
                     $stmt->execute(); 
-                   
                     
                     } catch(PDOException $e) {
                        echo "<div class='error'> Fout: </div>" . $e->getMessage();
@@ -176,7 +175,7 @@
     
             echo "Successfully removed record.";
             // redirect naar index.php
-            echo "<meta http-equiv='refresh' content='0;url=http://localhost/eindopdracht/index.php'>";
+            echo "<meta http-equiv='refresh' content='0;url=http://localhost/oefenopdracht2/index.php'>";
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
@@ -191,7 +190,6 @@
 
         $check = getimagesize($file["tmp_name"]);
         if($check !== false) {
-            echo "Bestand is een afbeelding - " . $check["mime"] . ".";
             $uploadOk = 1;
         } else {
             echo "Bestand is geen afbeelding.";
@@ -201,26 +199,26 @@
 
         // controleer of het bestand al bestaat
         if (file_exists($target_file)) {
-        echo "Sorry, het bestand bestaat al.";
-        $uploadOk = 0;
+            echo "Sorry, het bestand bestaat al.";
+            $uploadOk = 0;
         }
 
         // controleer de bestandsgrootte
         if ($file["size"] > 5000000) {
-        echo "Sorry, je bestand is te groot.";
-        $uploadOk = 0;
+            echo "Sorry, je bestand is te groot.";
+            $uploadOk = 0;
         }
 
         // sta bepaalde bestandstypen toe
         if($imageFileType != "jpg" && $imageFileType != "webp" && $imageFileType != "png" && $imageFileType != "jpeg"
         && $imageFileType != "gif" ) {
-        echo "Sorry, alleen JPG, JPEG, PNG & GIF bestanden zijn toegestaan.";
-        $uploadOk = 0;
+            echo "Sorry, alleen JPG, JPEG, PNG & GIF bestanden zijn toegestaan.";
+            $uploadOk = 0;
         }
 
         // controleer of $uploadOk op 0 is gezet door een fout
         if ($uploadOk == 0) {
-        echo "Sorry, je bestand werd niet geüpload.";
+            echo "Sorry, je bestand werd niet geüpload.";
         // als alles goed is, probeer het bestand dan te uploaden
         } else {
         if (move_uploaded_file($file["tmp_name"], $target_file)) {

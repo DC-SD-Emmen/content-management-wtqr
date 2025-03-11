@@ -38,7 +38,7 @@ window.onclick = function (event) {
 document.addEventListener("DOMContentLoaded", () => {
     const homeRedirectButton = document.getElementById("libraryButton");
     homeRedirectButton.addEventListener("click", () => {
-        window.location.href = "http://localhost/eindopdracht/index.php";
+        window.location.href = "http://localhost/oefenopdracht2/index.php";
     });
 });
 
@@ -66,28 +66,28 @@ document.addEventListener("DOMContentLoaded", () => {
             animatedElements.forEach((element, index) => {
                 setTimeout(() => {
                     element.classList.add("slide-in"); // Voeg de animatieklasse toe
-                }, index * 200); // vertraag animaties per element
+                }, index * 100); // vertraag animaties per element
             });
 
             // Animeren van de game-grid items
             gameGridItems.forEach((item, index) => {
                 setTimeout(() => {
                     item.classList.add("content-loaded"); // voeg de animatieklasse toe
-                }, index * 100); // snellere volgorde voor game-grid
+                }, index * 50); // snellere volgorde voor game-grid
             });
 
             // animeren van de zijbalk items
             sidebarItems.forEach((item, index) => {
                 setTimeout(() => {
                     item.classList.add("content-loaded"); // voeg de animatieklasse toe
-                }, index * 100); // vertraagde volgorde voor de zijbalk
+                }, index * 50); // vertraagde volgorde voor de zijbalk
             });
 
             // maak de zijbalk zichtbaar
             setTimeout(() => {
                 sidebar.classList.add("content-loaded"); // Zijbalk animatie
-            }, 500); // Vertraging voor zijbalk
-        }, 2000); // Vertraging voor loader voordat inhoud wordt getoond
+            }, 100); // Vertraging voor zijbalk
+        }, 1900); // Vertraging voor loader voordat inhoud wordt getoond
     } else {
         loader.style.display = "none"; // Vvrberg loader 
         content.classList.remove("hidden"); // toon inhoud 

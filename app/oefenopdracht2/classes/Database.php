@@ -7,7 +7,7 @@ class Database {
    private $serverName = "mysql";
    private $title = "root";
    private $genre = "root";
-   private $dbName = "gamelibrary";
+   private $dbName = "user_login";
    private $conn;
 
  //Functies
