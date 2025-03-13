@@ -1,3 +1,14 @@
+<?php
+
+session_start();
+
+if (!isset($_SESSION['username'])) {
+            header("Location: register.php");
+    exit;
+}
+
+?>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -20,7 +31,7 @@
                 <li class="addgame"> <a class="submit" href="./add_game.php"
                 target="_explorer.exe">ADD GAME</a></li>
 
-                <li class="account"><a class="account1" href="./register.php"
+                <li class="account"><a class="account1" href="./user.php"
                 target="_explorer.exe">ACCOUNT</a></li> 
             </ul>
 

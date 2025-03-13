@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => {
                 sidebar.classList.add("content-loaded"); // Zijbalk animatie
             }, 100); // Vertraging voor zijbalk
-        }, 1900); // Vertraging voor loader voordat inhoud wordt getoond
+        }, 1000); // Vertraging voor loader voordat inhoud wordt getoond
     } else {
         loader.style.display = "none"; // Vvrberg loader 
         content.classList.remove("hidden"); // toon inhoud 

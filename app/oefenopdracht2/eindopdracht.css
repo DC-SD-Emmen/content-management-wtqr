@@ -979,7 +979,6 @@ input[type="submit"]:hover {
     animation: shake 0.5s ease-in-out infinite; 
 }
 
-/* Dramatic Pulsing Animation for Success */
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -991,8 +990,7 @@ input[type="submit"]:hover {
     }
 }
 
-/* Dramatic Shaking Animation for Errors */
-/* Subtle Shaking Animation for Errors */
+
 @keyframes shake {
     0% { transform: translateX(0); }
     25% { transform: translateX(-2px); }
@@ -1001,19 +999,18 @@ input[type="submit"]:hover {
     100% { transform: translateX(0); }
 }
 
-
-
-
 #loggedIn {
-    background-color: #404040;
     border-radius: 8px;
     justify-content: center;
     margin-left: 30%;
     margin-right: 30%;
 }
 
+form {
+    background-color: #00000028;
+}
+
 #LoggedOut {
-    background-color: #404040;
     border-radius: 8px;
     justify-content: center;
     margin-left: 41%;
@@ -1021,7 +1018,6 @@ input[type="submit"]:hover {
 }
 
 .topcontainer {
-    margin-top: -76px;
     min-height: 110vh;
     align-items: center;
     justify-content: center;
@@ -1031,6 +1027,27 @@ input[type="submit"]:hover {
 }
 
 h2 {
-    padding-top: 59px;
     color: white;
+}
+
+#user {
+    background-color: #00000028;
+    align-items: center;
+    justify-content: center;
+    margin-top: -19px;
+}
+
+#topbar { 
+    overflow: hidden;
+    background-color: rgb(24, 30, 38);
+    margin-top: -2px;
+    font-size: 20px;
+}
+
+.welcome {
+    color: #444;
+    text-align: center;
+    margin-top: 5%;
+    color: white;
+    font-size: 20px
 }

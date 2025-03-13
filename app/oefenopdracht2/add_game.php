@@ -56,8 +56,7 @@ if (!$uploadSuccess) {
             target="_explorer.exe">COMMUNITY</a></li>
 
             <li class="addgame2">ADD GAME</li> 
-
-            <li class="account2"><a class="account1" href="./register.php"
+            <li class="account2"><a class="account1" href="./user.php"
             target="_explorer.exe">ACCOUNT</a></li> 
          </ul>
    </div>

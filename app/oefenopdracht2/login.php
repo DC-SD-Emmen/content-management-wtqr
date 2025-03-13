@@ -66,6 +66,22 @@ function verify_password($username, $password) {
 
 <body>
     <div class="topcontainer">
+            <ul id="topbar">
+                <li class="store" ><a class="store1" href="https://store.steampowered.com/"
+                target="_explorer.exe">STORE</a></li>
+
+                <li class="library2"><a class="submit2" href="./index.php"
+                target="_explorer.exe">LIBRARY</a></li>
+
+                <li class="community" ><a class="community1" href="https://steamcommunity.com/"
+                target="_explorer.exe">COMMUNITY</a></li>
+
+                <li class="addgame"> <a class="submit" href="./add_game.php"
+                target="_explorer.exe">ADD GAME</a></li>
+
+                <li class="library">ACCOUNT</li>
+            </ul>
+
         <h2>Login</h2>
 
         <?php if (!empty($errorMessage)): ?>

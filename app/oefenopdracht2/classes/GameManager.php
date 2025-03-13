@@ -201,8 +201,7 @@
         if (file_exists($target_file)) {
             echo "Sorry, het bestand bestaat al.";
             $uploadOk = 0;
-        }
-
+        } 
         // controleer de bestandsgrootte
         if ($file["size"] > 5000000) {
             echo "Sorry, je bestand is te groot.";
