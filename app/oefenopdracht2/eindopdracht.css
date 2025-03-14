@@ -1051,3 +1051,14 @@ h2 {
     color: white;
     font-size: 20px
 }
+
+.whislistgrid {
+    width: 85%;
+    min-height: 100vh;
+    background-color: #192d3a00;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    padding: 25px;
+    z-index: 1;
+}

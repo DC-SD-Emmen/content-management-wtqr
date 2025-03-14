@@ -57,6 +57,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
             <h2>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h2>
             <div id="loggedIn">You are logged in.</div>
             <p><a id="LoggedOut" href="user.php?action=logout">Logout</a></p>
+            <p><a id="Wishlist" href="wishlist.php">Wishlist    </a>
         </form>
     </div>
 </div>

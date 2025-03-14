@@ -1,8 +1,13 @@
-<?php 
+<?php
+    session_start();
     spl_autoload_register(function ($class) {
         include 'classes/' . $class . '.php';
     });
 
+    if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'wtqr') {
+        header("Location: index.php");
+        exit();
+    }
 
     $db = new Database();
     $gameManager = new GameManager($db);
@@ -11,24 +16,20 @@
 
         $uploadSuccess = $gameManager->fileUpload($_FILES['image']);
         $consoleSelected = isset($_POST['selectedConsole']);
-    
+
         if ($uploadSuccess && $consoleSelected) {
             $gameManager->insertData($_POST, $_FILES['image']['name']);
             header('Location: index.php');
         }
 
+        if (!$uploadSuccess) {
+            echo "File upload failed.";
+        }
 
-    
-if (!$uploadSuccess) {
-      echo "File upload failed.";
+        if (!$consoleSelected) {
+            echo "<div class='error'>Please select a console before submitting.</div>";
+        }
     }
-    
-    if (!$consoleSelected) {
-         echo "<div class='error'>Please select a console before submitting.</div>";
-    }
- }
-    
-    
 ?>
 
 <!DOCTYPE html>

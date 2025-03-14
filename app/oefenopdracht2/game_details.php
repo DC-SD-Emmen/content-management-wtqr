@@ -1,14 +1,5 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game-details</title> 
-    <link rel='stylesheet' href='eindopdracht.css'>
-    <script src="eindopdracht.js" defer></script>
-</head>
-<body id="detail-body">
-
 <?php 
+session_start(); // Start the session
 spl_autoload_register(function ($class) {
     include 'classes/' . $class . '.php';
 });
@@ -18,6 +9,16 @@ $db = new Database();
 $GameManager = new GameManager($db);
 $singleGame = $GameManager->fetch_game_by_title($game_id); 
 ?>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game-details</title> 
+    <link rel='stylesheet' href='eindopdracht.css'>
+    <script src="eindopdracht.js" defer></script>
+</head>
+<body id="detail-body">
 
 <div id="top-container-detail">
     <div class="gameDetails">
@@ -30,6 +31,8 @@ $singleGame = $GameManager->fetch_game_by_title($game_id);
                 <p class="platform"><strong>Platform:</strong> <?php echo htmlspecialchars($singleGame->get_platform()); ?></p>
                 <p class="releaseYear"><strong>Release Year:</strong> <?php echo date("d/m/Y", strtotime($singleGame->get_release_year())); ?></p>
                 <p class="rating"><strong>Rating:</strong> <?php echo htmlspecialchars($singleGame->get_rating()); ?>/10</p>
+                <a href="wishlist.php?action=add_to_wishlist&game_id=<?php echo $game_id; ?>" class="add_to_wishlist">Add to wishlist 📃</a> <br>
+                <a href="index.php?action=buy&game_id=<?php echo $game_id; ?>" class="buy">Buy game 🛒</a>
             </div>
         </div>
 
@@ -37,24 +40,30 @@ $singleGame = $GameManager->fetch_game_by_title($game_id);
             <h2>About This Game</h2>
             <p><?php echo nl2br(htmlspecialchars($singleGame->get_description())); ?></p>
         </div>
-    
+
         <div class="libraryButton">
             <button id="libraryButton">Back to library</button>
         </div>
     </div>
 </div>
-        <div id="deletebuttonDiv">
-            <form id="deletebuttonForm" method="POST">
-                <input type="submit" id="yesDeletebutton" name="deleteButon" value="Delete">
-            </form> 
-        </div>
-        <br>
-        <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            if (isset($_POST['deleteButon'])) {
-                $GameManager-> delete_data($game_id);
-            }
-        } ?>
+
+<?php
+if (isset($_SESSION['username']) && $_SESSION['username'] === 'wtqr') {
+?>
+    <div id="deletebuttonDiv">
+        <form id="deletebuttonForm" method="POST">
+            <input type="submit" id="yesDeletebutton" name="deleteButon" value="Delete">
+        </form> 
+    </div>
+<?php
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['deleteButon'])) {
+        $GameManager->delete_data($game_id);
+    }
+}
+?>
 </body>
 </html>
 
