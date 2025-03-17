@@ -54,13 +54,15 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
             <div class="container">
     <br>
     <form id="user">
-        <h2>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h2>
-        <div id="loggedIn">You are logged in.</div>
+    <h2>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h2>
+    <div id="loggedIn">You are logged in.</div>
+
+    <div style="display: flex; align-items: center; gap: 15px; text-align: center;">
         <p><a id="LoggedOut" href="user.php?action=logout">Logout</a></p>
         <p><a id="Wishlist" href="wishlist.php">Wishlist</a></p>
-        
-        <!-- Delete Account Link with confirmation -->
-        <p><a href="javascript:void(0);" onclick="confirmDelete(<?php echo $_SESSION['user_id']; ?>)" class="delete-link">Delete Account</a></p>
+        <a href="delete_user.php?user_id=<?php echo $_SESSION['user_id']; ?>" onclick="return confirm('Are you sure you want to delete your account and all your wishlist games? This action cannot be undone.');">Delete User Account</a>
+    </div> 
+
 
     </form>
 

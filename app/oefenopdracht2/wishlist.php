@@ -30,9 +30,9 @@
         $userManager->connection_user_games($user_id, $game_id);
     }
 
-    if (isset($_GET['action']) && $_GET['action'] == 'deleteGamesFromWishlist' && isset($_GET['game_id'])) {
+    if (isset($_GET['action']) && $_GET['action'] == 'deleteSpecificGamesFromWishlist' && isset($_GET['game_id'])) {
          $game_id = intval($_GET['game_id']);
-         $userManager->deleteGamesFromWishlist($user_id, $game_id);
+         $userManager->deleteSpecificGamesFromWishlist($user_id, $game_id);
          header("Location: wishlist.php"); 
          exit;
      }
@@ -71,7 +71,7 @@
                 <li class="account2"><a class="account1" href="./user.php"
                 target="_explorer.exe">ACCOUNT</a></li> 
 
-                <li class="addgame2">WISHLIST</a></li>
+                <li class="library">WISHLIST</a></li>
             </ul>
         </div>
         <div>
@@ -85,7 +85,7 @@
                             echo '<a href="game_details.php?game_id=' . urlencode($game['id']) . '">';
                             echo '<img class="gameImage" id="imagetitle" src="uploads/' . htmlspecialchars($game['image']) . '" alt="' . htmlspecialchars($game['title']) . '"></a>'; 
                             echo '<span style="margin-right: 10px;">' . htmlspecialchars($game['title']) . '</span>';
-                            echo '<a href="wishlist.php?action=deleteGamesFromWishlist&game_id=' . urlencode($game['id']) . '" class="add_to_wishlist">Remove</a>';
+                            echo '<a href="wishlist.php?action=deleteSpecificGamesFromWishlist&game_id=' . urlencode($game['id']) . '" class="add_to_wishlist">Remove</a>';
                             echo "</div>";
                         }
                             echo "</div>";

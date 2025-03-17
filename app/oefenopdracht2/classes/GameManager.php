@@ -195,7 +195,7 @@
 
         // controleer of het bestand een afbeelding is of geen afbeelding
 
-        $check = getimagesize($file["tmp_name"]);
+        $check = getimagesize($file["tmp_name"]); //line 198
         if($check !== false) {
             $uploadOk = 1;
         } else {

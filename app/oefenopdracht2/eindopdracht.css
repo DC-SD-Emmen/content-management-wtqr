@@ -1002,19 +1002,11 @@ input[type="submit"]:hover {
 #loggedIn {
     border-radius: 8px;
     justify-content: center;
-    margin-left: 30%;
-    margin-right: 30%;
+    margin-left: 32%;
 }
 
 form {
     background-color: #00000028;
-}
-
-#LoggedOut {
-    border-radius: 8px;
-    justify-content: center;
-    margin-left: 41%;
-    margin-right: 30%;
 }
 
 .topcontainer {
@@ -1064,15 +1056,12 @@ h2 {
     margin-left: 57px;
 }
 
-#Wishlist {
-    border-radius: 8px;
-    justify-content: center;
-    margin-left: 41%;
-    margin-right: 30%;
-}
-
 .wishlistempty {
     color: white;
     font-size: 20px;
     text-align: center;
+}
+
+#LoggedOut {
+    margin-left: 45px;
 }

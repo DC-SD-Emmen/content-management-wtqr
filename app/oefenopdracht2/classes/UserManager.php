@@ -43,19 +43,32 @@ class UserManager {
         }
     }
 
-     // Function to delete the user
-     public function deleteUser($userId) {
+    public function deleteGamesFromWishlist($userId) {
         try {
-            // First, delete the games from the user's wishlist
-            $this->deleteGamesFromWishlist($userId);  // Delete all games for this user
-    
+            $sql = "DELETE FROM user_games WHERE user_id = :user_id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':user_id', $userId);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            exit();
+        }
+    }
+
+    // Delete user and their associated games
+    public function deleteUserAndGames($userId) {
+        try {
+            // Delete games from the user's wishlist
+            $this->deleteGamesFromWishlist($userId);
+
             // Now delete the user from the database
             $stmt = $this->conn->prepare("DELETE FROM users WHERE id = :id");
             $stmt->bindParam(':id', $userId);
             $stmt->execute();
-            echo "User and related games deleted successfully.";
+
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
+            exit();
         }
     }
 
@@ -115,18 +128,18 @@ class UserManager {
     
     }
 
-     // Function to delete all games associated with the user's wishlist
-    public function deleteGamesFromWishlist($user_id) {
-        try {
-            $sql = "DELETE FROM user_games WHERE user_id = :user_id";  // No need for game_id, just user_id
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(':user_id', $user_id);
-            $stmt->execute();
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
-            exit();
-        }
-    }
+     public function deleteSpecificGamesFromWishlist($user_id, $game_id) {   
+         try {
+             $sql = "DELETE FROM user_games WHERE user_id = :user_id AND game_id = :game_id";
+             $stmt = $this->conn->prepare($sql);
+             $stmt->bindParam(':user_id', $user_id);
+             $stmt->bindParam(':game_id', $game_id);
+             $stmt->execute();
+         } catch (PDOException $e) {
+             echo "Error: " . $e->getMessage();
+             exit();
+         }
+     }
     
 }
 
