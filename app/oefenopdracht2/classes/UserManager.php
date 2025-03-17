@@ -43,26 +43,17 @@ class UserManager {
         }
     }
 
-    // Nieuwe functie: Gebruiker ophalen via ID
-    public function getUserById($userId) {
+     // Function to delete the user
+     public function deleteUser($userId) {
         try {
-            $stmt = $this->conn->prepare("SELECT * FROM users WHERE id = :id");
-            $stmt->bindParam(':id', $userId);
-            $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
-            exit();
-        }
-    }
-
-    // Nieuwe functie: Gebruiker verwijderen (delete user by ID)
-    public function deleteUser($userId) {
-        try {
+            // First, delete the games from the user's wishlist
+            $this->deleteGamesFromWishlist($userId);  // Delete all games for this user
+    
+            // Now delete the user from the database
             $stmt = $this->conn->prepare("DELETE FROM users WHERE id = :id");
             $stmt->bindParam(':id', $userId);
             $stmt->execute();
-            echo "User deleted successfully.";
+            echo "User and related games deleted successfully.";
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
@@ -117,12 +108,25 @@ class UserManager {
             $stmt->bindParam(':game_id', $game_id);
             $stmt->execute();
 
-            echo "Connection successfully created!";
-            return true;
-
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
             return false;
         }
+    
     }
+
+     // Function to delete all games associated with the user's wishlist
+    public function deleteGamesFromWishlist($user_id) {
+        try {
+            $sql = "DELETE FROM user_games WHERE user_id = :user_id";  // No need for game_id, just user_id
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            exit();
+        }
+    }
+    
 }
+

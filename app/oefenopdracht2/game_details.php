@@ -1,5 +1,5 @@
 <?php 
-session_start(); // Start the session
+session_start(); 
 spl_autoload_register(function ($class) {
     include 'classes/' . $class . '.php';
 });
@@ -32,7 +32,6 @@ $singleGame = $GameManager->fetch_game_by_title($game_id);
                 <p class="releaseYear"><strong>Release Year:</strong> <?php echo date("d/m/Y", strtotime($singleGame->get_release_year())); ?></p>
                 <p class="rating"><strong>Rating:</strong> <?php echo htmlspecialchars($singleGame->get_rating()); ?>/10</p>
                 <a href="wishlist.php?action=add_to_wishlist&game_id=<?php echo $game_id; ?>" class="add_to_wishlist">Add to wishlist 📃</a> <br>
-                <a href="index.php?action=buy&game_id=<?php echo $game_id; ?>" class="buy">Buy game 🛒</a>
             </div>
         </div>
 

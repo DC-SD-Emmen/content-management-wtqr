@@ -61,9 +61,8 @@
             target="_explorer.exe">ACCOUNT</a></li> 
          </ul>
    </div>
-</body> 
-</html>
-    <div id="form">
+
+   <div id="form">
         <form method="post" onsubmit="return validateSelection()" enctype="multipart/form-data">
 
             <label id="title1" for="title"> Title </label>
@@ -135,5 +134,6 @@
     <div class="library">
 </div>
 
-</body>
-</html> 
+</div>
+</body> 
+</html>

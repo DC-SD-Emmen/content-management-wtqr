@@ -1052,13 +1052,27 @@ h2 {
     font-size: 20px
 }
 
-.whislistgrid {
-    width: 85%;
+.whishlistgrid {
+    width: 90%;
     min-height: 100vh;
     background-color: #192d3a00;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 25px;
     padding: 25px;
     z-index: 1;
+    margin-left: 57px;
+}
+
+#Wishlist {
+    border-radius: 8px;
+    justify-content: center;
+    margin-left: 41%;
+    margin-right: 30%;
+}
+
+.wishlistempty {
+    color: white;
+    font-size: 20px;
+    text-align: center;
 }

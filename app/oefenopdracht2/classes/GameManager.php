@@ -138,48 +138,55 @@
 
     public function delete_data($game_id) {
         try {
-            // valideer game-id
+            // Validate game ID
             if (!is_numeric($game_id)) {
                 echo "Invalid game ID.";
                 return;
             }
-
-            // haal het afbeeldingspad op voor het spel
-
+    
+            // Begin transaction to ensure both deletions succeed
+            $this->conn->beginTransaction();
+    
+            // Remove the game from the user_games table first
+            $stmt = $this->conn->prepare("DELETE FROM user_games WHERE game_id = :game_id");
+            $stmt->bindParam(':game_id', $game_id, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            // Fetch the image path for the game
             $stmt = $this->conn->prepare("SELECT image FROM games WHERE id = :id");
             $stmt->bindParam(':id', $game_id, PDO::PARAM_INT);
             $stmt->execute();
-    
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($row) {
-                $image_path = 'uploads/' . $row["image"]; 
     
-                // kijk of de file een bestaat en verwijder hem. 
+            if ($row) {
+                $image_path = 'uploads/' . $row["image"];
+    
+                // Check if file exists and delete it
                 if (file_exists($image_path)) {
-                    if (unlink($image_path)) {
-                        echo "Image successfully removed: " . $image_path;
-                    } else {
-                        echo "Error while removing the image: " . $image_path;
-                    }
-                } else {
-                    echo "Image not found: " . $image_path;
+                    unlink($image_path);
                 }
-            } else {
-                echo "No image found for the specified game ID.";
             }
     
-            // Verwijder de game uit de database
+            // Delete the game from the games table
             $stmt = $this->conn->prepare("DELETE FROM games WHERE id = :id");
             $stmt->bindParam(':id', $game_id, PDO::PARAM_INT);
             $stmt->execute();
     
+            // Commit the transaction
+            $this->conn->commit();
+    
             echo "Successfully removed record.";
-            // redirect naar index.php
+            
+            // Redirect to index.php
             echo "<meta http-equiv='refresh' content='0;url=http://localhost/oefenopdracht2/index.php'>";
         } catch (PDOException $e) {
+            // Rollback the transaction on failure
+            $this->conn->rollBack();
             echo "Error: " . $e->getMessage();
         }
     }
+    
+
     public function fileUpload($file) {
         $target_dir = "uploads/";
         $target_file = $target_dir . basename($file["name"]);
@@ -228,6 +235,22 @@
             return False;
         }
         }
+    }
+
+    public function getGamesFromWishlist($user_id) {
+        $wishlistQuery = "
+        SELECT games.id, games.title, games.image
+        FROM games
+        INNER JOIN user_games ON games.id = user_games.game_id
+        WHERE user_games.user_id = :user_id;
+        ";
+
+        $stmt = $this->conn->prepare($wishlistQuery);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->execute();
+        $wishlistGames = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $wishlistGames;
     }
 
 }
