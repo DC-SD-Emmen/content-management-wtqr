@@ -43,51 +43,72 @@ class UserManager {
         }
     }
 
-    public function updateUserCredentials($userId, $newUsername, $newPassword, $confirmPassword) {
+    public function updateUserCredentials($userId, $newUsername, $newEmail, $newPassword, $confirmPassword) {
         $errorMessage = '';
     
         // Validate username (only letters/numbers, 3-25 chars)
         $usernameRegex = "/^[a-zA-Z0-9]{3,25}$/";
         if (!preg_match($usernameRegex, $newUsername)) {
-            $errorMessage = "<div class='error-message' id='error-message'>Invalid username. It must be 5-20 characters long and contain only letters and numbers.</div>";
-            return $errorMessage;
+            return "<div class='error-message' id='error-message'>Invalid username. It must be 3-25 characters long and contain only letters and numbers.</div>";
         }
     
-        // **Password validation: Check if password is at least 3 characters**
+        // Validate email format
+        if (!filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
+            return "<div class='error-message' id='error-message'>Invalid email format.</div>";
+        }
+    
+        // Password validation: Check if password is at least 3 characters
         if (strlen($newPassword) < 3) {
-            $errorMessage = "<div class='error-message' id='error-message'>Password must be at least 6 characters long.</div>";
-            return $errorMessage;
+            return "<div class='error-message' id='error-message'>Password must be at least 3 characters long.</div>";
         }
     
         // Check if passwords match
         if ($newPassword !== $confirmPassword) {
-            $errorMessage = "<div class='error-message' id='error-message'>Passwords do not match.</div>";
-            return $errorMessage;
+            return "<div class='error-message' id='error-message'>Passwords do not match.</div>";
         }
     
         try {
-            // Check if username is already taken
             $stmt = $this->conn->prepare("SELECT id FROM users WHERE username = :username AND id != :id");
             $stmt->bindParam(':username', $newUsername);
             $stmt->bindParam(':id', $userId);
             $stmt->execute();
             
             if ($stmt->rowCount() > 0) {
-                $errorMessage = "<div class='error-message' id='error-message'>Username is already taken.</div>";
-                return $errorMessage;
+                return "<div class='error-message' id='error-message'>Username is already taken.</div>";
             }
     
-            // Hash the new password
-            $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
-    
-            // Update the user's credentials
-            $stmt = $this->conn->prepare("UPDATE users SET username = :username, password = :password WHERE id = :id");
-            $stmt->bindParam(':username', $newUsername);
-            $stmt->bindParam(':password', $hashedPassword);
+            $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = :email AND id != :id");
+            $stmt->bindParam(':email', $newEmail);
             $stmt->bindParam(':id', $userId);
             $stmt->execute();
+            
+            if ($stmt->rowCount() > 0) {
+                return "<div class='error-message' id='error-message'>Email is already in use.</div>";
+            }
     
-            // Return success message with a redirect effect
+            $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+    
+            if ($newUsername) {
+                $stmt = $this->conn->prepare("UPDATE users SET username = :username WHERE id = :id");
+                $stmt->bindParam(':username', $newUsername);
+                $stmt->bindParam(':id', $userId);
+                $stmt->execute();
+            }
+    
+            if ($newEmail) {
+                $stmt = $this->conn->prepare("UPDATE users SET email = :email WHERE id = :id");
+                $stmt->bindParam(':email', $newEmail);
+                $stmt->bindParam(':id', $userId);
+                $stmt->execute();
+            }
+    
+            if ($newPassword) {
+                $stmt = $this->conn->prepare("UPDATE users SET password = :password WHERE id = :id");
+                $stmt->bindParam(':password', $hashedPassword);
+                $stmt->bindParam(':id', $userId);
+                $stmt->execute();
+            }
+    
             return "<div id='redirect'>Account updated successfully! Redirecting in <span id='countdown'>3</span> seconds...</div>";
     
         } catch (PDOException $e) {
@@ -95,8 +116,6 @@ class UserManager {
         }
     }
     
-    
-
     public function deleteGamesFromWishlist($userId) {
         try {
             $sql = "DELETE FROM user_games WHERE user_id = :user_id";
@@ -167,4 +186,3 @@ class UserManager {
      }
     
 }
-

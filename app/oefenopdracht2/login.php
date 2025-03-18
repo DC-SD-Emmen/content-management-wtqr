@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 ob_start();
 
 $host = "mysql";
@@ -18,9 +17,9 @@ spl_autoload_register(function ($class) {
 $errorMessage = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = htmlspecialchars($_POST['username'] ?? '');
-    $password = htmlspecialchars($_POST['password'] ?? '');
-    
+    $username = trim(htmlspecialchars($_POST['username'] ?? ''));
+    $password = trim(htmlspecialchars($_POST['password'] ?? ''));
+
     if (empty($username) || empty($password)) {
         $errorMessage = "<div class='error-message' id='error-message'>Username and password are required.</div>";
     } else {
@@ -33,7 +32,10 @@ function verify_password($username, $password) {
     $database = new Database();
     $conn = $database->getConnection();
 
-    $username = htmlspecialchars($username);
+    if (!$conn) {
+        $errorMessage = "<div class='error-message' id='error-message'>Database connection failed.</div>";
+        return;
+    }
 
     $stmt = $conn->prepare("SELECT * FROM users WHERE username = :username");
     $stmt->bindParam(':username', $username);
@@ -41,12 +43,12 @@ function verify_password($username, $password) {
     $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user['password'])) {
+        session_regenerate_id(true);
         $_SESSION['username'] = $user['username'];
         $_SESSION['user_id'] = $user['id'];
 
         ob_end_clean();
-        
-        header("Location: user.php?id=" . urlencode($user['username']) . $user['id']);
+        header("Location: user.php?id=" . urlencode($user['id']));
         exit;
     } else {
         $errorMessage = "<div class='error-message' id='error-message'>Invalid username or password.</div>";
@@ -56,7 +58,6 @@ function verify_password($username, $password) {
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -66,21 +67,13 @@ function verify_password($username, $password) {
 
 <body>
     <div class="topcontainer">
-            <ul id="topbar">
-                <li class="store" ><a class="store1" href="https://store.steampowered.com/"
-                target="_explorer.exe">STORE</a></li>
-
-                <li class="library2"><a class="submit2" href="./index.php"
-                target="_explorer.exe">LIBRARY</a></li>
-
-                <li class="community" ><a class="community1" href="https://steamcommunity.com/"
-                target="_explorer.exe">COMMUNITY</a></li>
-
-                <li class="addgame"> <a class="submit" href="./add_game.php"
-                target="_explorer.exe">ADD GAME</a></li>
-
-                <li class="library">ACCOUNT</li>
-            </ul>
+        <ul id="topbar">
+            <li class="store"><a class="store1" href="https://store.steampowered.com/" target="_explorer.exe">STORE</a></li>
+            <li class="library2"><a class="submit2" href="./index.php" target="_explorer.exe">LIBRARY</a></li>
+            <li class="community"><a class="community1" href="https://steamcommunity.com/" target="_explorer.exe">COMMUNITY</a></li>
+            <li class="addgame"><a class="submit" href="./add_game.php" target="_explorer.exe">ADD GAME</a></li>
+            <li class="library">ACCOUNT</li>
+        </ul>
 
         <h2>Login</h2>
 
@@ -100,6 +93,9 @@ function verify_password($username, $password) {
             <label for="username">Username:</label>
             <input type="text" class="username2" name="username" required>
 
+            <label for="email">Email:</label>
+            <input type="email" class="email1" name="email" required>
+
             <label for="password">Password:</label>
             <input type="password" class="password2" name="password" required>
 
@@ -109,5 +105,4 @@ function verify_password($username, $password) {
         </form>
     </div>
 </body>
-
 </html>

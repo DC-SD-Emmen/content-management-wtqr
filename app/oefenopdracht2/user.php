@@ -1,11 +1,5 @@
 <?php
 
-$host = "mysql";
-$dbname = "my-wonderful-website";
-$charset = "utf8";
-$port = "3306";
-
-
 spl_autoload_register(function ($class) {
     include __DIR__ . '/' . $class . '.php';
 });

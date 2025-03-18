@@ -18,35 +18,44 @@ $errors = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = htmlspecialchars($_POST['username'] ?? '');
+    $email = htmlspecialchars($_POST['email'] ?? '');
     $password = htmlspecialchars($_POST['password'] ?? '');
 
-    // Validate username with regex (only letters and numbers, 5-20 characters)
+    // Validate username (only letters and numbers, 3-25 characters)
     $usernameRegex = "/^[a-zA-Z0-9]{3,25}$/"; 
     if (!preg_match($usernameRegex, $username)) {
         $errors[] = "Invalid username. It must be 3-25 characters long and contain only letters and numbers.";
-    } else {
-        // Check if username already exists in the database
+    }
+
+    // Validate email format
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Invalid email format.";
+    }
+
+    // Check if username or email already exists in the database
+    if (empty($errors)) {
         $database = new Database();
         $conn = $database->getConnection();
 
-        $checkStmt = $conn->prepare("SELECT COUNT(*) FROM users WHERE username = :username");
+        $checkStmt = $conn->prepare("SELECT COUNT(*) FROM users WHERE username = :username OR email = :email");
         $checkStmt->bindParam(':username', $username);
+        $checkStmt->bindParam(':email', $email);
         $checkStmt->execute();
         $userExists = $checkStmt->fetchColumn();
 
         if ($userExists > 0) {
-            $errors[] = "Username already exists. Please choose another.";
+            $errors[] = "Username or email already exists. Please choose another.";
         }
     }
 
-    // If there are no validation errors, proceed to register the user
+    // If no errors, register the user
     if (empty($errors)) {
-        register_user($username, $password);
+        register_user($username, $email, $password);
     }
 }
 
 // Function to register the user
-function register_user($username, $password) {
+function register_user($username, $email, $password) {
     global $errors, $messages;
 
     $database = new Database();
@@ -56,8 +65,9 @@ function register_user($username, $password) {
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
     // Insert the new user into the database
-    $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
+    $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (:username, :email, :password)");
     $stmt->bindParam(':username', $username);
+    $stmt->bindParam(':email', $email);
     $stmt->bindParam(':password', $passwordHash);
 
     if ($stmt->execute()) {
@@ -70,14 +80,12 @@ function register_user($username, $password) {
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="eindopdracht.css">
     <title>Registration</title>
 </head>
-
 <body>
     <div class="topcontainer">
         <ul id="topbar"> 
@@ -126,15 +134,16 @@ function register_user($username, $password) {
             <label for="username">Username:</label>
             <input type="text" class="username1" name="username" required>
 
+            <label for="email">Email:</label>
+            <input type="email" class="email1" name="email" required>
+
             <label for="password">Password:</label>
             <input type="password" class="password1" name="password" required>
 
             <input type="submit" name="submit" value="Register">
 
             <p>Already have an account? <a href="login.php">Log in here</a></p>
-
         </form>
     </div>
 </body>
-
 </html>

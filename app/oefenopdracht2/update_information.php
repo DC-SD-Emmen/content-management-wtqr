@@ -14,44 +14,106 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $database = new Database();
-$conn = $database->getConnection();
-$userManager = new UserManager($conn);
+$userManager = new UserManager($database->getConnection());
 
 $errorMessage = '';
 $successMessage = '';
 
+$userId = $_SESSION['user_id'];
+$currentUser = $userManager->getUser($_SESSION['username']);
+
+if (!$currentUser) {
+    session_destroy();
+    header("Location: login.php");
+    exit;
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $newUsername = htmlspecialchars($_POST['new_username'] ?? '');
+    // Initialize current password
     $currentPassword = $_POST['current_password'] ?? '';
-    $newPassword = $_POST['new_password'] ?? '';
-    $confirmPassword = $_POST['confirm_password'] ?? '';
-    $userId = $_SESSION['user_id'];
 
-    // Validate fields
-    if (empty($newUsername) || empty($currentPassword) || empty($newPassword) || empty($confirmPassword)) {
-        $errorMessage = "<div class='error-message' id='error-message'>All fields are required.</div>";
-    } elseif ($newPassword !== $confirmPassword) {
-        $errorMessage = "<div class='error-message' id='error-message'>Passwords do not match.</div>";
-    } else {
-        $user = $userManager->getUser($_SESSION['username']);
-
-        // Check if the current password matches the one in the database
-        if (!$user || !password_verify($currentPassword, $user['password'])) {
-            $errorMessage = "<div class='error-message' id='error-message'>Current password is incorrect.</div>";
-        } else {
-            // Update credentials
-            $result = $userManager->updateUserCredentials($userId, $newUsername, $newPassword, $confirmPassword);
-            
-            // If the update was successful, update session username
+    // Handle updating the username
+    if (isset($_POST['update_username'])) {
+        $newUsername = htmlspecialchars($_POST['new_username'] ?? '');
+        
+        // You should validate current password only if updating the username or email
+        if (!empty($newUsername)) {
+            // If updating the username or email, you don't need to validate the current password
+            $result = $userManager->updateUserCredentials(
+                $userId, 
+                $newUsername,
+                $currentUser['email'],
+                $currentUser['password'],
+                $currentUser['password'] // Send the current password (no change needed)
+            );
             if (strpos($result, 'successfully') !== false) {
                 $_SESSION['username'] = $newUsername;
-                $successMessage = $result;
+                $successMessage = "Username updated successfully!";
             } else {
                 $errorMessage = $result;
             }
+        } else {
+            $errorMessage = "Username field cannot be empty!";
+        }
+    }
+
+    // Handle updating the email
+    if (isset($_POST['update_email'])) {
+        $newEmail = htmlspecialchars($_POST['new_email'] ?? '');
+        
+        // Validate the new email before updating
+        if (!empty($newEmail) && filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
+            // Same as username update: no need to validate current password for email update
+            $result = $userManager->updateUserCredentials(
+                $userId, 
+                $currentUser['username'], 
+                $newEmail,
+                $currentUser['password'],
+                $currentUser['password'] // Send the current password (no change needed)
+            );
+            if (strpos($result, 'successfully') !== false) {
+                $successMessage = "Email updated successfully!";
+            } else {
+                $errorMessage = $result;
+            }
+        } else {
+            $errorMessage = "Please enter a valid email address!";
+        }
+    }
+
+    // Handle updating the password
+    if (isset($_POST['update_password'])) {
+        $newPassword = $_POST['new_password'] ?? '';
+        $confirmPassword = $_POST['confirm_password'] ?? '';
+
+        if (!empty($newPassword) && !empty($confirmPassword)) {
+            if ($newPassword === $confirmPassword) {
+                if (!password_verify($currentPassword, $currentUser['password'])) {
+                    $errorMessage = "Current password is incorrect!";
+                } else {
+                    $result = $userManager->updateUserCredentials(
+                        $userId, 
+                        $currentUser['username'],
+                        $currentUser['email'], 
+                        $newPassword, 
+                        $confirmPassword
+                    );
+                    if (strpos($result, 'successfully') !== false) {
+                        $successMessage = "Password updated successfully! Redirecting...";
+                        echo "<script>setTimeout(() => window.location.href = 'user.php', 3000);</script>";
+                    } else {
+                        $errorMessage = $result;
+                    }
+                }
+            } else {
+                $errorMessage = "Passwords do not match!";
+            }
+        } else {
+            $errorMessage = "All password fields are required!";
         }
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -66,14 +128,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="topcontainer">
         <ul id="topbar"> 
             <li class="store"><a class="store1" href="https://store.steampowered.com/" target="_explorer.exe">STORE</a></li>
-
-        
             <li class="library2"><a class="submit2" href="./index.php" target="_explorer.exe">LIBRARY</a></li>
-
             <li class="community"><a class="community1" href="https://steamcommunity.com/" target="_explorer.exe">COMMUNITY</a></li>
-
             <li class="addgame"><a class="submit" href="./add_game.php" target="_explorer.exe">ADD GAME</a></li>
-            
             <li class="library">ACCOUNT</li> 
         </ul>
 
@@ -81,14 +138,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h2>Update Your Information</h2>
 
             <?php 
-            if (!empty($errorMessage)) echo $errorMessage;
-            if (!empty($successMessage)) echo $successMessage;
+            if (!empty($errorMessage)) echo "<div id='error-message'>$errorMessage</div>";
+            if (!empty($successMessage)) echo "<div class='success-message'>$successMessage</div>";
             ?>
 
             <form action="" method="post">
+                <h3>Change Username</h3>
                 <label for="new_username">New Username:</label>
-                <input type="text" name="new_username" value="<?php echo htmlspecialchars($newUsername ?? ''); ?>" required>
+                <input type="text" name="new_username" value="<?php echo htmlspecialchars($currentUser['username'] ?? ''); ?>" required>
+                <label for="current_password">Current Password:</label>
+                <input type="password" name="current_password" required>
+                <input type="submit" name="update_username" value="Update Username">
+            </form>     
 
+            <form action="" method="post">
+                <h3>Change E-mail</h3>
+                <label for="new_email">New E-mail:</label>
+                <input type="email" name="new_email" value="<?php echo htmlspecialchars($currentUser['email'] ?? ''); ?>" required>
+                <label for="current_password">Current Password:</label>
+                <input type="password" name="current_password" required>
+                <input type="submit" name="update_email" value="Update Email">
+            </form>
+
+            <form action="" method="post">
+                <h3>Change Password</h3>
                 <label for="current_password">Current Password:</label>
                 <input type="password" name="current_password" required>
 
@@ -98,7 +171,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="confirm_password">Confirm New Password:</label>
                 <input type="password" name="confirm_password" required>
 
-                <input type="submit" value="Update Information">
+                <input type="submit" name="update_password" value="Update Password">
             </form>
 
             <p><a href="user.php">Back to Dashboard</a></p>
@@ -106,25 +179,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <script>
-    // Countdown and Redirect logic
-    if (document.getElementById('redirect')) {
-        let countdown = 3;  // Start countdown at 3 seconds
-        const countdownElement = document.getElementById('countdown');
-        const interval = setInterval(() => {
-            countdown--;
-            if (countdownElement) countdownElement.textContent = countdown;
-            if (countdown <= 0) {
-                clearInterval(interval);
-                window.location.href = 'user.php';  // Redirect to user.php after countdown finishes
-            }
-        }, 1000);
-    }
-</script>
-
-    <script>
         setTimeout(() => {
             const errorMessage = document.getElementById('error-message');
-            const successMessage = document.getElementById('redirect');
+            const successMessage = document.getElementById('success-message');
             if (errorMessage) errorMessage.style.display = 'none';
             if (successMessage) successMessage.style.display = 'none';
         }, 5000);
