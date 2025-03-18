@@ -20,9 +20,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = htmlspecialchars($_POST['username'] ?? '');
     $password = htmlspecialchars($_POST['password'] ?? '');
 
-    if (empty($username) || empty($password)) {
-        $errors[] = "Username and Password required";
+    // Validate username with regex (only letters and numbers, 5-20 characters)
+    $usernameRegex = "/^[a-zA-Z0-9]{3,25}$/"; 
+    if (!preg_match($usernameRegex, $username)) {
+        $errors[] = "Invalid username. It must be 3-25 characters long and contain only letters and numbers.";
     } else {
+        // Check if username already exists in the database
         $database = new Database();
         $conn = $database->getConnection();
 
@@ -36,23 +39,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    // If there are no validation errors, proceed to register the user
     if (empty($errors)) {
         register_user($username, $password);
     }
 }
 
+// Function to register the user
 function register_user($username, $password) {
     global $errors, $messages;
 
     $database = new Database();
     $conn = $database->getConnection();
 
-    $username = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
-    $password = password_hash($password, PASSWORD_DEFAULT);
+    // Hash the password securely
+    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
+    // Insert the new user into the database
     $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
     $stmt->bindParam(':username', $username);
-    $stmt->bindParam(':password', $password);
+    $stmt->bindParam(':password', $passwordHash);
 
     if ($stmt->execute()) {
         $messages[] = "You have been registered successfully. Redirecting in <span id='countdown'>3</span> seconds...";
@@ -74,22 +80,14 @@ function register_user($username, $password) {
 
 <body>
     <div class="topcontainer">
-        	<ul id="topbar"> 
-                <li class="store" ><a class="store1" href="https://store.steampowered.com/"
-                target="_explorer.exe">STORE</a></li>
+        <ul id="topbar"> 
+            <li class="store"><a class="store1" href="https://store.steampowered.com/" target="_explorer.exe">STORE</a></li>
+            <li class="library2"><a class="submit2" href="./index.php" target="_explorer.exe">LIBRARY</a></li>
+            <li class="community"><a class="community1" href="https://steamcommunity.com/" target="_explorer.exe">COMMUNITY</a></li>
+            <li class="addgame"><a class="submit" href="./add_game.php" target="_explorer.exe">ADD GAME</a></li>
+            <li class="library">ACCOUNT</li> 
+        </ul>
 
-                <li class="library2"><a class="submit2" href="./index.php"
-                target="_explorer.exe">LIBRARY</a></li>
-                
-                <li class="community" ><a class="community1" href="https://steamcommunity.com/"
-                target="_explorer.exe">COMMUNITY</a></li>
-
-                <li class="addgame"> <a class="submit" href="./add_game.php"
-                target="_explorer.exe">ADD GAME</a></li>
-
-                <li class="library">ACCOUNT</li> 
-            </ul>
-        
         <h2>Registration</h2>
 
         <div id="message-container">
@@ -125,7 +123,6 @@ function register_user($username, $password) {
         </script>
 
         <form action="" method="post">
-
             <label for="username">Username:</label>
             <input type="text" class="username1" name="username" required>
 

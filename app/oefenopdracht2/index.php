@@ -3,7 +3,7 @@
 session_start();
 
 if (!isset($_SESSION['username'])) {
-            header("Location: register.php");
+            header("Location: login.php");
     exit;
 }
 

@@ -10,7 +10,7 @@ class UserManager {
 
     // Gebruiker invoegen (inserts user with regex validation)
     public function insertUser($username, $password) {
-        $usernameRegex = "/^[a-zA-Z0-9]{5,20}$/"; // Restored your regex
+        $usernameRegex = "/^[a-zA-Z0-9]{3,25}$/"; // Restored your regex
 
         if (!preg_match($usernameRegex, $username)) {
             echo "Invalid username";
@@ -43,6 +43,60 @@ class UserManager {
         }
     }
 
+    public function updateUserCredentials($userId, $newUsername, $newPassword, $confirmPassword) {
+        $errorMessage = '';
+    
+        // Validate username (only letters/numbers, 3-25 chars)
+        $usernameRegex = "/^[a-zA-Z0-9]{3,25}$/";
+        if (!preg_match($usernameRegex, $newUsername)) {
+            $errorMessage = "<div class='error-message' id='error-message'>Invalid username. It must be 5-20 characters long and contain only letters and numbers.</div>";
+            return $errorMessage;
+        }
+    
+        // **Password validation: Check if password is at least 3 characters**
+        if (strlen($newPassword) < 3) {
+            $errorMessage = "<div class='error-message' id='error-message'>Password must be at least 6 characters long.</div>";
+            return $errorMessage;
+        }
+    
+        // Check if passwords match
+        if ($newPassword !== $confirmPassword) {
+            $errorMessage = "<div class='error-message' id='error-message'>Passwords do not match.</div>";
+            return $errorMessage;
+        }
+    
+        try {
+            // Check if username is already taken
+            $stmt = $this->conn->prepare("SELECT id FROM users WHERE username = :username AND id != :id");
+            $stmt->bindParam(':username', $newUsername);
+            $stmt->bindParam(':id', $userId);
+            $stmt->execute();
+            
+            if ($stmt->rowCount() > 0) {
+                $errorMessage = "<div class='error-message' id='error-message'>Username is already taken.</div>";
+                return $errorMessage;
+            }
+    
+            // Hash the new password
+            $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+    
+            // Update the user's credentials
+            $stmt = $this->conn->prepare("UPDATE users SET username = :username, password = :password WHERE id = :id");
+            $stmt->bindParam(':username', $newUsername);
+            $stmt->bindParam(':password', $hashedPassword);
+            $stmt->bindParam(':id', $userId);
+            $stmt->execute();
+    
+            // Return success message with a redirect effect
+            return "<div id='redirect'>Account updated successfully! Redirecting in <span id='countdown'>3</span> seconds...</div>";
+    
+        } catch (PDOException $e) {
+            return "<div class='error-message' id='error-message'>Error: " . htmlspecialchars($e->getMessage()) . "</div>";
+        }
+    }
+    
+    
+
     public function deleteGamesFromWishlist($userId) {
         try {
             $sql = "DELETE FROM user_games WHERE user_id = :user_id";
@@ -69,35 +123,6 @@ class UserManager {
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
             exit();
-        }
-    }
-
-    // Nieuwe functie: Haal alle games van een gebruiker op
-    public function getUserGames($userId) {
-        try {
-            $stmt = $this->conn->prepare("SELECT g.* FROM games g 
-                                         JOIN user_games ug ON g.id = ug.game_id 
-                                         WHERE ug.user_id = :user_id");
-            $stmt->bindParam(':user_id', $userId);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
-            return [];
-        }
-    }
-
-    // Nieuwe functie: Wachtwoord bijwerken (secure password update)
-    public function updatePassword($userId, $newPassword) {
-        try {
-            $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
-            $stmt = $this->conn->prepare("UPDATE users SET password = :password WHERE id = :id");
-            $stmt->bindParam(':password', $hashedPassword);
-            $stmt->bindParam(':id', $userId);
-            $stmt->execute();
-            echo "Password updated successfully.";
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
         }
     }
 

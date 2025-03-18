@@ -60,31 +60,12 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
     <div style="display: flex; align-items: center; gap: 15px; text-align: center;">
         <p><a id="LoggedOut" href="user.php?action=logout">Logout</a></p>
         <p><a id="Wishlist" href="wishlist.php">Wishlist</a></p>
-        <a href="delete_user.php?user_id=<?php echo $_SESSION['user_id']; ?>" onclick="return confirm('Are you sure you want to delete your account and all your wishlist games? This action cannot be undone.');">Delete User Account</a>
+        <p><a id="UpdateInformation" href="update_information.php">Update Information</a></p>
+        <a href="delete_user.php?user_id=<?php echo $_SESSION['user_id']; ?>" onclick="return confirm('Are you sure you want to delete your account and all your wishlist games? This action cannot be undone.');">Delete Account</a>
     </div> 
 
 
     </form>
-
-    <script>
-        // JavaScript function to confirm deletion before redirecting
-        function confirmDelete(userId) {
-            // Ask for confirmation before proceeding with the deletion
-            const confirmation = confirm("Are you sure you want to delete your account? This action cannot be undone.");
-            if (confirmation) {
-                // Redirect to the delete_user.php with the user ID to perform the deletion
-                window.location.href = "delete_user.php?user_id=" + userId;
-                header("Location:login.php");
-            }
-        }
-    </script>
-</div>
-
-
-
-
-        </form>
-    </div>
 </div>
 </body>
 </html>

@@ -1027,6 +1027,8 @@ h2 {
     align-items: center;
     justify-content: center;
     margin-top: -19px;
+    padding: 7%;
+    margin-left: 27%;
 }
 
 #topbar { 
@@ -1063,5 +1065,5 @@ h2 {
 }
 
 #LoggedOut {
-    margin-left: 45px;
+    margin-left: -17px;
 }

@@ -125,4 +125,3 @@ document.addEventListener("DOMContentLoaded", () => {
     sessionStorage.setItem("lastVisitedPage", currentPage);
 });
 
-
