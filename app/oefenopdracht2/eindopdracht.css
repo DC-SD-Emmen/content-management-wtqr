@@ -1007,7 +1007,7 @@ input[type="submit"]:hover {
 #loggedIn {
     border-radius: 8px;
     justify-content: center;
-    margin-left: 32%;
+    margin-left: 37%;
 }
 
 form {
@@ -1076,7 +1076,24 @@ h2 {
 .containerupdate { 
     min-height: 185vh;
 }
+/* General form styling */
+form#user {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #00000028;
+    border-radius: 8px;
+}
 
+.user { 
+    color: #ffffff;
+    margin-top: 5%;
+    margin-left: 0%;
+}
+
+/* Tablet and below (max-width: 768px) */
 @media screen and (max-width: 768px) {
     body {
         font-size: 14px;
@@ -1138,8 +1155,41 @@ h2 {
     #loader .loading-text {
         font-size: 1.5rem;
     }
+
+    form#user {
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+        padding: 10px;
+        font-size: 1em;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+    }
+
+    input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 1.2em;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+    h2 {
+        font-size: 1.5em;
+        text-align: center;
+    }
+
+    .topcontainer {
+        padding: 10px;
+        box-sizing: border-box;
+    }
 }
 
+/* Mobile devices (max-width: 480px) */
 @media screen and (max-width: 480px) {
     body {
         font-size: 12px;
@@ -1158,7 +1208,7 @@ h2 {
     }
 
     .gameGrid {
-        grid-template-columns: 1fr; /
+        grid-template-columns: 1fr;
     }
 
     .gameTitle {
@@ -1182,8 +1232,35 @@ h2 {
     .submit2 {
         padding: 10px;
     }
+
+    form#user {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+        padding: 8px 10px;
+    }
+
+    input[type="submit"] {
+        padding: 8px 10px;
+        font-size: 1em;
+    }
+
+    h2 {
+        font-size: 1.4em;
+        text-align: center;
+    }
+
+    .topcontainer {
+        padding: 10px;
+        box-sizing: border-box;
+    }
 }
 
+/* Media Queries for 1024px screens and below */
 @media (max-width: 1024px) {
     .sidebar {
         width: 100%;
@@ -1221,6 +1298,7 @@ h2 {
     }
 }
 
+/* Media Queries for smaller screens (768px) */
 @media (max-width: 768px) {
     .sidebar {
         display: none;
@@ -1253,4 +1331,3 @@ h2 {
         font-size: 12px;
     }
 }
-

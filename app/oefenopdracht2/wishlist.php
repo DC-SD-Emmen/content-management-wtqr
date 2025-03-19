@@ -1,7 +1,6 @@
 <?php
-    session_start(); // start de sessie
+    session_start(); 
 
-    // autoload functie voor het automatisch inladen van klassen
     spl_autoload_register(function ($class) {
         include 'classes/' . $class . '.php';
     });
@@ -11,38 +10,32 @@
     $conn = $db->getConnection();
     $gameManager = new GameManager($db);
 
-    // controleer of de gebruiker is ingelogd, zo niet doorverwijzen naar login pagina
+    // controleer of de gebruiker is ingelogd, zo niet redirect naar login pagina
     if (!isset($_SESSION['username'])) {
         header("Location: login.php");
         exit;
     }
 
-    // zoekfunctie: zoek naar games op basis van de ingevoerde zoekterm
-    if (isset($_GET['search'])) {
-        $searchTerm = htmlspecialchars($_GET['search']); // escape de zoekterm om XSS te voorkomen
-        $games = $gameManager->searchGames($searchTerm); // zoek naar games met de zoekterm
-    }
-
-    // haal gebruikersinformatie op en sla het gebruikers-ID op
+    // haal gebruikersinformatie op en sla het user-id op
     $userManager = new UserManager($conn);
     $user = $userManager->getUser($_SESSION['username']);
     $user_id = $user['id'];
 
-    // voeg een game toe aan de verlanglijst
+    // voeg een game toe aan de wishlist
     if (isset($_GET['action']) && $_GET['action'] == 'add_to_wishlist' && isset($_GET['game_id'])) {
-        $game_id = intval($_GET['game_id']); // zet game_id om naar een integer
-        $userManager->connection_user_games($user_id, $game_id); // voeg de game toe aan de verlanglijst
+        $game_id = intval($_GET['game_id']); // zet game_id om naar een integer dus een heel getal
+        $userManager->connection_user_games($user_id, $game_id); // voeg de game toe aan de wishlist
     }
 
-    // verwijder een specifieke game van de verlanglijst
+    // verwijder een specifieke game van de wishlist
     if (isset($_GET['action']) && $_GET['action'] == 'deleteSpecificGamesFromWishlist' && isset($_GET['game_id'])) {
-        $game_id = intval($_GET['game_id']); // zet game_id om naar een integer
-        $userManager->deleteSpecificGamesFromWishlist($user_id, $game_id); // verwijder de game uit de verlanglijst
+        $game_id = intval($_GET['game_id']); // zet game_id om naar een integer dus een heel getal
+        $userManager->deleteSpecificGamesFromWishlist($user_id, $game_id); // verwijder de game uit de wishlist
         header("Location: wishlist.php"); // herlaad de pagina na het verwijderen
         exit;
     }
 
-    // haal alle games uit de verlanglijst op
+    // haal alle games uit de wishlist op
     $wishlistGames = $gameManager->getGamesFromWishlist($user_id);
 
 
@@ -73,21 +66,21 @@
         </div>
         <div>
                 <?php    
-                    echo "<h2>My Wishlist</h2>"; // titel voor de verlanglijst
-                    echo "<div class='whishlistgrid'>"; // begin van de grid voor verlanglijst games
-                    if (count($wishlistGames) > 0) { // controleer of er games in de verlanglijst staan
+                    echo "<h2>My Wishlist</h2>"; 
+                    echo "<div class='whishlistgrid'>"; // begin van de grid voor games
+                    if (count($wishlistGames) > 0) { // controleer of er games in de wishlist staan
                             
-                        foreach ($wishlistGames as $game) { // loop door de games in de verlanglijst
-                            echo "<div class='gameGridItem'>"; // begin van het item voor de game
+                        foreach ($wishlistGames as $game) { // loop door de games in de wishlist
+                            echo "<div class='gameGridItem'>"; 
                             echo '<a href="game_details.php?game_id=' . urlencode($game['id']) . '">'; // link naar de game details
                             echo '<img class="gameImage" id="imagetitle" src="uploads/' . htmlspecialchars($game['image']) . '" alt="' . htmlspecialchars($game['title']) . '"></a>'; // toon de afbeelding van de game
                             echo '<span style="margin-right: 10px;">' . htmlspecialchars($game['title']) . '</span>'; // toon de titel van de game
                             echo '<a href="wishlist.php?action=deleteSpecificGamesFromWishlist&game_id=' . urlencode($game['id']) . '" class="add_to_wishlist">Remove</a>'; // verwijder de game uit de verlanglijst
-                            echo "</div>"; // einde van het game-item
+                            echo "</div>"; 
                         }
-                            echo "</div>"; // einde van de game grid
+                            echo "</div>"; // grid einde
                     } else {
-                        echo "<div class='wishlistempty'>Your wishilist is empty</div>"; // toon bericht als de verlanglijst leeg is
+                        echo "<div class='wishlistempty'>Your wishilist is empty</div>"; // als er niks is laat dat zien
                     }
 
                 ?>

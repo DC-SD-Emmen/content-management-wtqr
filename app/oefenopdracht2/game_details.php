@@ -10,7 +10,6 @@ spl_autoload_register(function ($class) {
 // haal het game_id op uit de URL parameter
 $game_id = $_GET["game_id"];
 
-// maak een nieuwe databaseverbinding en game manager instantie
 $db = new Database();
 $GameManager = new GameManager($db);
 
@@ -59,6 +58,7 @@ $singleGame = $GameManager->fetch_game_by_title($game_id);
 
 <?php
 // controleer of de gebruiker is ingelogd met de naam 'wtqr'
+// admin functie: alleen wtqr kan deze verwijder knop zien en gebruiken
 if (isset($_SESSION['username']) && $_SESSION['username'] === 'wtqr') {
 ?>
     <div id="deletebuttonDiv">

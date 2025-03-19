@@ -7,17 +7,17 @@
         include 'classes/' . $class . '.php';
     });
 
+    // admin functie, zodat alleen 'wtqr' hier in kan
     // controleer of gebruiker is ingelogd en of de gebruikersnaam 'wtqr' is
     if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'wtqr') {
         header("Location: index.php"); // als niet ingelogd, redirect naar index
         exit();
     }
 
-    // maak een nieuwe databaseverbinding en game manager instantie
     $db = new Database();
     $gameManager = new GameManager($db);
 
-    // controleer of het formulier is ingediend via POST
+    // controleer of het formulier is ingevuld via post
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // probeer bestand te uploaden
@@ -25,7 +25,8 @@
         // controleer of console is geselecteerd
         $consoleSelected = isset($_POST['selectedConsole']);
 
-        // als bestand uploaden en console geselecteerd zijn, voer data in
+        // als bestand uploaden en console geselecteerd zijn, voer data in 
+        // && staat voor 'en' s
         if ($uploadSuccess && $consoleSelected) {
             $gameManager->insertData($_POST, $_FILES['image']['name']);
             header('Location: index.php'); // redirect naar index na succesvolle invoer
@@ -74,6 +75,7 @@
    </div>
 
    <div id="form">
+         <!-- check of er iets in de dropdown is gekozen ↓  -->
         <form method="post" onsubmit="return validateSelection()" enctype="multipart/form-data">
 
             <label id="title1" for="title"> Title </label>
@@ -104,8 +106,10 @@
 
             <label id="rating1" for="rating"> Rating </label>
             <input type="range" id="rating" name="rating" min="1.0" max="10.0" step="0.1" required 
-                   oninput="this.nextElementSibling.value = parseFloat(this.value).toFixed(1)">
-            <output for="rating">5.0</output><br> <br> 
+                oninput="this.nextElementSibling.value = parseFloat(this.value).toFixed(1)">
+                <!-- bij bewegen slider update het getal ernaast, afronden op 1 decimaal -->
+            <output for="rating">5.0</output><br><br> <!-- laat standaard 5.0 zien -->  
+
 
             <label id="developer1" for="developer"> Developer </label>
             <input type="text" id="developer" name="developer" required> <br><br>

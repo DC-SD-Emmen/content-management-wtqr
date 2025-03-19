@@ -50,16 +50,15 @@ class UserManager {
         }
     }
 
-    // Update username
 public function updateUsername($userId, $newUsername) {
-    // Validate username
+    // check usernname
     $usernameRegex = "/^[a-zA-Z0-9]{3,25}$/";
     if (!preg_match($usernameRegex, $newUsername)) {
         return "<div class='error-message' id='error-message'>Invalid username. It must be 3-25 characters long and contain only letters and numbers.</div>";
     }
 
     try {
-        // Check if username already exists
+        // kijk of username al bestaat  
         $stmt = $this->conn->prepare("SELECT id FROM users WHERE username = :username AND id != :id");
         $stmt->bindParam(':username', $newUsername);
         $stmt->bindParam(':id', $userId);
@@ -75,22 +74,25 @@ public function updateUsername($userId, $newUsername) {
         $stmt->bindParam(':id', $userId);
         $stmt->execute();
 
-        return "<div id='redirect'>Username updated successfully.</div>";
+        // Update sessie nadat name is veranderd
+        $_SESSION['username'] = $newUsername;
+
+        return "<div id='redirect'>Username updated successfully. Redirecting in <span id='countdown'>3</span> seconds...</div>";
 
     } catch (PDOException $e) {
         return "<div class='error-message' id='error-message'>Error: " . htmlspecialchars($e->getMessage()) . "</div>";
     }
 }
 
-// Update email
+// update email
 public function updateEmail($userId, $newEmail) {
-    // Validate email format
+    // check email formaat
     if (!filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
         return "<div class='error-message' id='error-message'>Invalid email format.</div>";
     }
 
     try {
-        // Check if email already exists
+        // Check of email al bestaat
         $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = :email AND id != :id");
         $stmt->bindParam(':email', $newEmail);
         $stmt->bindParam(':id', $userId);
@@ -100,7 +102,7 @@ public function updateEmail($userId, $newEmail) {
             return "<div class='error-message' id='error-message'>Email is already in use.</div>";
         }
 
-        // Update email
+        // update email
         $stmt = $this->conn->prepare("UPDATE users SET email = :email WHERE id = :id");
         $stmt->bindParam(':email', $newEmail);
         $stmt->bindParam(':id', $userId);
@@ -113,23 +115,23 @@ public function updateEmail($userId, $newEmail) {
     }
 }
 
-// Update password
+// update password
 public function updatePassword($userId, $newPassword, $confirmPassword) {
-    // Validate password length
+    // check password lengte
     if (strlen($newPassword) < 3) {
         return "<div class='error-message' id='error-message'>Password must be at least 3 characters long.</div>";
     }
 
-    // Check if passwords match
+    // kijk of het password goed is
     if ($newPassword !== $confirmPassword) {
         return "<div class='error-message' id='error-message'>Passwords do not match.</div>";
     }
 
-    // Hash the new password
+    // has de nieuwe password
     $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
 
     try {
-        // Update password
+        // update password
         $stmt = $this->conn->prepare("UPDATE users SET password = :password WHERE id = :id");
         $stmt->bindParam(':password', $hashedPassword);
         $stmt->bindParam(':id', $userId);

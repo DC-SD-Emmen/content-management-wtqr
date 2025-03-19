@@ -1,30 +1,31 @@
 <?php
 session_start();
 
-// Autoload classes (ensure this works with your directory structure)
 spl_autoload_register(function ($class) {
     include 'classes/' . $class . '.php';
 });
 
-// Check if user_id is set in the URL
-if (isset($_GET['user_id'])) {
-    $userId = intval($_GET['user_id']);  // Ensure user_id is an integer
+// controleer of user_id in de url staat
 
-    // Create an instance of the Database and UserManager classes
+if (isset($_GET['user_id'])) {
+    $userId = intval($_GET['user_id']);  // zet user_id om naar een geheel getal (dus wat intval doet)
+
     $db = new Database();
     $userManager = new UserManager($db->getConnection());
 
-    // Call the deleteUserAndGames method to delete both the user's games and the user
+    // verwijder de gebruiker en alle bijbehorende games
+
     $userManager->deleteUserAndGames($userId);
 
-    // Optional: Destroy the session (if the user was logged in)
-    session_unset();   // Remove all session variables
-    session_destroy(); // Destroy the session
+    session_unset();   // haal alle sessievariabelen weg
+    session_destroy(); // vernietig de sessie volledig
 
-    // Redirect after successful deletion
-    header("Location: index.php");  // Redirect to the homepage or login page
+    // stuur de gebruiker na verwijdering door naar de index, wat dus automatisch naar login.php gaat (ik had natuurlijk ook gewoon naar login.php kunnen doen maar dit werkt ook)
+
+    header("Location: index.php");  
     exit;
 } else {
-    echo "User ID is missing.";
+    echo "User ID is missing."; // geef een melding als er geen user_id is
 }
+
 ?>

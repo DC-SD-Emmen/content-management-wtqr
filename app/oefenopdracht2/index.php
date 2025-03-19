@@ -1,6 +1,5 @@
 <?php
 
-// start sessie voor toegang tot sessievariabelen
 session_start();
 
 // controleer of de gebruiker ingelogd is, zo niet doorverwijzen naar login.php
@@ -38,12 +37,10 @@ if (!isset($_SESSION['username'])) {
             </ul>
 
     <?php
-        // autoload functie voor het inladen van klassen
         spl_autoload_register(function ($class) {
             include 'classes/' . $class . '.php';
         });
 
-        // maak verbinding met de database en haal GameManager op
         $db = new Database();
         $GameManager = new GameManager($db);
     ?>
@@ -56,14 +53,15 @@ if (!isset($_SESSION['username'])) {
 <div id="content" class="hidden">
     <div id="page">
         <div class="navigation">
-            <!-- navigatie link voor route selectie -->
+            <!-- navigatie link die actief is en reageert op een klik -->
+            <!-- return false voorkomt dat de browser de standaard linkactie uitvoert -->
+
             <a class="active" href="" onClick="onRouteClick('a'); return false;">
                 <div class="loader"></div>
                 <div class="container"></div>
             </a>
             <div class="libraryGame">
                 <div class="sidebar animated">
-                    <!-- sidebar titel voor alle games -->
                     <h1 id="AllToggle"> - All games </h1> 
                     <?php 
                     // haal alle games op uit de database

@@ -1,11 +1,10 @@
 <?php
 
-// autoload de klassen
+session_start(); 
+
 spl_autoload_register(function ($class) {
     include __DIR__ . '/' . $class . '.php';
 });
-
-session_start(); 
 
 // controleer of gebruiker is ingelogd, zo niet, doorverwijzen naar inlogpagina
 if (!isset($_SESSION['username'])) {
@@ -46,10 +45,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
             <div class="container">
     <br>
     <form id="user">
-    <h2>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h2>
+    <h2 class="user">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h2>
     <div id="loggedIn">You are logged in.</div>
 
-    <div style="display: flex; align-items: center; gap: 10px; text-align: center;">
+    <div style="display: flex; align-items: center; gap: 10px; text-align: center;margin-left: 14.5%;>">
         <p><a id="LoggedOut" href="user.php?action=logout">Logout</a></p>
         <p><a id="Wishlist" href="wishlist.php">Wishlist</as></p>
         <p><a id="UpdateInformation" href="update_information.php">Change Information</a></p>

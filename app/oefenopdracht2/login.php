@@ -1,9 +1,7 @@
 <?php
-// start sessie en buffering voor pagina-output
 session_start();
 ob_start();
 
-// autoload functie voor het inladen van klassen
 spl_autoload_register(function ($class) {
     $file = 'classes/' . $class . '.php';
     if (file_exists($file)) {
@@ -11,10 +9,9 @@ spl_autoload_register(function ($class) {
     }
 });
 
-// foutmelding variabele voor het tonen van foutmeldingen
+// voor het tonen van foutmeldingen
 $errorMessage = '';
 
-// verwerk formulier als de request methode POST is
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // haal en reinig gebruikersinvoer
     $username = trim(htmlspecialchars($_POST['username'] ?? ''));
@@ -29,10 +26,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// functie om wachtwoord te verifiëren
+// functie om wachtwoord te checken
 function verify_password($username, $password) {
     global $errorMessage;
-    // maak database verbinding
     $database = new Database();
     $conn = $database->getConnection();
 
@@ -42,7 +38,7 @@ function verify_password($username, $password) {
         return;
     }
 
-    // bereid SQL statement voor om gebruiker op te halen
+    // SQL statement om gebruiker op te halen
     $stmt = $conn->prepare("SELECT * FROM users WHERE username = :username");
     $stmt->bindParam(':username', $username);
     $stmt->execute();
@@ -51,16 +47,17 @@ function verify_password($username, $password) {
     // controleer of de gebruiker bestaat en of het wachtwoord klopt
     if ($user && password_verify($password, $user['password'])) {
         // regenereer sessie-ID voor veiligheid
-        session_regenerate_id(true);
+        // wordt gedaan zodat hackers niet je sessie kunnen stelen 
+        session_regenerate_id(true); 
+       
         $_SESSION['username'] = $user['username'];
         $_SESSION['user_id'] = $user['id'];
 
-        // stop de output buffering en stuur de gebruiker door naar hun accountpagina
+        // was even een simpele fix om de header te laten werken
         ob_end_clean();
         header("Location: user.php?id=" . urlencode($user['id']));
         exit;
     } else {
-        // als de login mislukt, toon een foutmelding
         $errorMessage = "<div class='error-message' id='error-message'>Invalid username or password.</div>";
     }
 }
@@ -78,7 +75,6 @@ function verify_password($username, $password) {
 <body>
     <div class="topcontainer">
         <ul id="topbar">
-            <!-- navigatielinks naar verschillende pagina's -->
             <li class="store"><a class="store1" href="https://store.steampowered.com/" target="_explorer.exe">STORE</a></li>
             <li class="library2"><a class="submit2" href="./index.php" target="_explorer.exe">LIBRARY</a></li>
             <li class="community"><a class="community1" href="https://steamcommunity.com/" target="_explorer.exe">COMMUNITY</a></li>
@@ -88,7 +84,7 @@ function verify_password($username, $password) {
 
         <h2>Login</h2>
 
-        <!-- toon foutmelding indien aanwezig -->
+        <!-- toon foutmelding als er iets fout is -->
         <?php if (!empty($errorMessage)): ?>
             <?php echo $errorMessage; ?>
             <script>
@@ -102,7 +98,6 @@ function verify_password($username, $password) {
             </script>
         <?php endif; ?>
 
-        <!-- login formulier -->
         <form action="" method="post">
             <label for="username">Username:</label>
             <input type="text" class="username2" name="username" required>
@@ -115,7 +110,6 @@ function verify_password($username, $password) {
 
             <input type="submit" name="submit" value="login">
 
-            <!-- link naar registratiepagina -->
             <p>Don't have an account? <a href="register.php">Register here</a></p>
         </form>
     </div>
