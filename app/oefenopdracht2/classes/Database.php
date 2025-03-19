@@ -3,11 +3,11 @@
 class Database {  
 
    // properties  
-   private $serverName = "mysql"; // naam van de server  
-   private $title = "root"; // gebruikersnaam voor database  
-   private $genre = "root"; // wachtwoord voor database  
-   private $dbName = "user_login"; // naam van de database  
-   private $conn; // connectie variabele  
+   private $serverName = "mysql"; 
+   private $title = "root"; 
+   private $genre = "root"; 
+   private $dbName = "user_login"; 
+   private $conn; 
 
    // constructor functie  
    public function __construct(){

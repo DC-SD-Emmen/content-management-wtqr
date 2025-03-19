@@ -1,31 +1,42 @@
 <?php
+    // start sessie voor toegang tot sessievariabelen
     session_start();
+
+    // registreer autoload functie om klassen automatisch in te laden
     spl_autoload_register(function ($class) {
         include 'classes/' . $class . '.php';
     });
 
+    // controleer of gebruiker is ingelogd en of de gebruikersnaam 'wtqr' is
     if (!isset($_SESSION['username']) || $_SESSION['username'] !== 'wtqr') {
-        header("Location: index.php");
+        header("Location: index.php"); // als niet ingelogd, redirect naar index
         exit();
     }
 
+    // maak een nieuwe databaseverbinding en game manager instantie
     $db = new Database();
     $gameManager = new GameManager($db);
 
+    // controleer of het formulier is ingediend via POST
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
+        // probeer bestand te uploaden
         $uploadSuccess = $gameManager->fileUpload($_FILES['image']);
+        // controleer of console is geselecteerd
         $consoleSelected = isset($_POST['selectedConsole']);
 
+        // als bestand uploaden en console geselecteerd zijn, voer data in
         if ($uploadSuccess && $consoleSelected) {
             $gameManager->insertData($_POST, $_FILES['image']['name']);
-            header('Location: index.php');
+            header('Location: index.php'); // redirect naar index na succesvolle invoer
         }
 
+        // geef foutmelding als uploaden niet is gelukt
         if (!$uploadSuccess) {
-            echo "File upload failed.";
+            echo "<div class='error'>File upload failed.</div>";
         }
 
+        // geef foutmelding als geen console is geselecteerd
         if (!$consoleSelected) {
             echo "<div class='error'>Please select a console before submitting.</div>";
         }
@@ -43,7 +54,6 @@
 </head>
 <body>
 
-
 <div id="topcontainer">    
     <div id="top">        
          <ul>
@@ -57,6 +67,7 @@
             target="_explorer.exe">COMMUNITY</a></li>
 
             <li class="addgame2">ADD GAME</li> 
+
             <li class="account2"><a class="account1" href="./user.php"
             target="_explorer.exe">ACCOUNT</a></li> 
          </ul>
@@ -75,10 +86,10 @@
             <div class="dropdown">
                 <label class="dropbtn" id="dropdownLabel" onclick="toggleDropdown()">Select console</label>
                 <div class="dropdown-content" id="dropdownContent">
-                    <a href="#" onclick="selectConsole('PC')">PC</a>
+                    <a href="#" onclick="selectConsole('PC')">Pc</a>
                     <a href="#" onclick="selectConsole('Xbox')">Xbox</a>
                     <a href="#" onclick="selectConsole('Playstation')">Playstation</a>
-                    <a href="#" onclick="selectConsole('Nintendo Switch')">Nintendo Switch</a>
+                    <a href="#" onclick="selectConsole('Nintendo Switch')">Nintendo switch</a>
                     <a href="#" onclick="selectConsole('Mobile')">Mobile</a>
                 </div>
             </div>
@@ -108,6 +119,7 @@
             <input type="submit" id="submit" name="submit">
        
         <script>  
+            // validatie functie voor formulier
             function validateForm(event) {
             const title = document.getElementById('title').value;
             const genre = document.getElementById('genre').value;
@@ -118,6 +130,7 @@
             const image = document.getElementById('image').value;
             const description = document.getElementById('description').value;
 
+                // controleer of alle velden ingevuld zijn
                 if (!title || !genre || !platform || !releaseYear || !rating || !developer || !image || !description) {
                 alert("Please fill in all fields.");
                 return false;

@@ -2,15 +2,15 @@
 
 class Game {
     // properties  
-    private $id; // unieke id van de game  
-    private $title; // titel van de game  
-    private $genre; // genre van de game  
-    private $platform; // op welke console of pc t is  
-    private $release_year; // jaar waarin de game uitkwam  
-    private $rating; // beoordeling of cijfer van de game  
-    private $developer; // wie de game gemaakt heeft  
-    private $image; // afbeelding van de game  
-    private $description; // korte omschrijving van de game  
+    private $id; 
+    private $title; 
+    private $genre; 
+    private $platform; 
+    private $release_year; 
+    private $rating;
+    private $developer; 
+    private $image; 
+    private $description; 
 
     // id instellen en ophalen  
     public function setID($id) {
@@ -48,7 +48,7 @@ class Game {
         return $this->platform;
     }
 
-    // release jaar instellen en ophalen  
+    // release year instellen en ophalen  
     public function set_release_year($release_year) {
         $this->release_year = $release_year;
     }

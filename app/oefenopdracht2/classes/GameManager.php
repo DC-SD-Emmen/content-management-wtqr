@@ -2,16 +2,16 @@
 
     class GameManager {
   
-         // houdt de databaseverbinding bij   
+         // houdt de connectie bij
         private $conn;
 
-        // constructor om de databaseverbinding te initialiseren
+        // constructor om de verbinding te maekn
         public function __construct(Database $db) {
             $this->conn = $db->getConnection();
         }
 
         public function insertData($data, $imageName) {
-             // saniteer en valideer de invoervelden
+             // filter en check de inputs
             $title = htmlspecialchars($data['title'] ?? '');
             $genre = htmlspecialchars($data['genre'] ?? '');
             $platform = htmlspecialchars($data['selectedConsole'] ?? '');
@@ -21,7 +21,7 @@
             $image = htmlspecialchars($data['image'] ?? '');
             $description = htmlspecialchars($data['description'] ?? '');
 
-             // reguliere expressies om elk veld te valideren
+             // regGEX
             $titleRegex = '/^[a-zA-Z0-9\s:,!()-]+$/'; 
             $genreRegex = '/^[a-zA-Z\s\-\']+$/';
             $platformRegex = '/^.*$/'; 
@@ -31,7 +31,7 @@
             $imageRegex = '/^.*$/'; 
             $descriptionRegex = '/^[a-zA-Z0-9\s.,;:!?()\'\"-]+$/';
 
-             // valideer elk veld en toon foutmeldingen als het niet geldig is
+             // valideer elk veld 
             if (!preg_match($titleRegex, $title)) {
                 echo "<div class='invalidTitle'> titel is ongeldig </div>";
             } else if(!preg_match($genreRegex, $genre)) {
@@ -49,8 +49,8 @@
             } else if(!preg_match($descriptionRegex, $description)) { 
                 echo "<div class='invalidDescription'> beschrijving is ongeldig </div>";    
             } else { 
-                 // als alle validaties slagen, probeer de game in de database in te voegen
-                 //Bind parameter gebruiken we om SQL injection attack te voorkomen.
+                 // als alles goed is, voeg t toe aan de datatabase
+                 // bind peramitor gebruiken we om sql injectie attack te voorkomen
                 try {
                     $stmt = $this->conn->prepare("INSERT INTO games (title , genre,  platform, release_year, rating, developer, image, description) 
                                                         VALUES (:title , :genre,  :platform, :release_year, :rating, :developer, :image, :description)");
@@ -67,7 +67,7 @@
                     } catch(PDOException $e) {
                        echo "<div class='error'> Fout: </div>" . $e->getMessage();
 
-                    // vang database-gerelateerde fouten op en toon ze
+                    // vind database fouten op en toon ze
                    echo "<script>window.location.href = 'http://localhost/eindopdracht/index.php';</script>";
                    return true;
        
@@ -81,7 +81,7 @@
  public function fetch_all_games() {
         $stmt = $this->conn->prepare("SELECT * FROM games");
         $stmt->execute();
-        // loop door de resultaten en zet elke rij om in een Game object
+        // bekijkt de resultaten en zet elke rij in een object
         $games = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $game = new Game();
@@ -95,9 +95,9 @@
             $game->set_rating($row['rating']);
             $game->set_image($row['image']);
     
-            $games[] = $game; // voeg het game-object toe aan de lijst
+            $games[] = $game; // voegt het game object toe aan de lijst
         } 
-         // toon een bericht als er geen games zijn gevonden
+         // error
         if (empty($games)) {
             echo "<div>Geen games gevonden in de database.</div>";
          }
@@ -107,15 +107,23 @@
 
 
     public function fetch_game_by_title($id) {
-    
+        // perpared de query om een game op te halen 
         $stmt = $this->conn->prepare("SELECT * FROM games WHERE id = :id");
+        
+        // bind het id aan de query
         $stmt->bindParam(':id', $id);
+        
+        // voer de query uit 
         $stmt->execute();
         
+        // haal de gegevens op van de game
         $gameData = $stmt->fetch(PDO::FETCH_ASSOC);
     
+        // check of er data is
         if ($gameData) {
             $game = new Game();
+            
+            // stelt de specificaties van de game in
             $game->setID($gameData['id']);
             $game->set_title($gameData['title']);
             $game->set_description($gameData['description']);
@@ -125,34 +133,44 @@
             $game->set_release_year($gameData['release_year']);
             $game->set_rating($gameData['rating']);
             $game->set_image($gameData['image']);
+            
+            //  return game + data
             return $game;
         }
     }
+    
 
     public function fetch_first_game_id() {
+        // prepared query om eerste game van rij te vinden 
         $stmt = $this->conn->prepare("SELECT id FROM games ORDER BY id ASC LIMIT 1");
         $stmt->execute();
+
+        // fetch resultaat
         $firstGame = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $firstGame ? $firstGame['id'] : null; // retourneer null als er geen game is gevonden
+
+        // geeft eerste game terug als die er is, anders geef nul
+        return $firstGame ? $firstGame['id'] : null; 
     }
+
 
     public function delete_data($game_id) {
         try {
-            // Validate game ID
+            // check game id
             if (!is_numeric($game_id)) {
                 echo "Invalid game ID.";
                 return;
             }
     
-            // Begin transaction to ensure both deletions succeed
+            // begin transactie zodat beide deletes goed gaan
             $this->conn->beginTransaction();
+
     
-            // Remove the game from the user_games table first
+            // haal eerst de game uit de user wishlist
             $stmt = $this->conn->prepare("DELETE FROM user_games WHERE game_id = :game_id");
             $stmt->bindParam(':game_id', $game_id, PDO::PARAM_INT);
             $stmt->execute();
     
-            // Fetch the image path for the game
+            // haal de image path op
             $stmt = $this->conn->prepare("SELECT image FROM games WHERE id = :id");
             $stmt->bindParam(':id', $game_id, PDO::PARAM_INT);
             $stmt->execute();
@@ -161,28 +179,27 @@
             if ($row) {
                 $image_path = 'uploads/' . $row["image"];
     
-                // Check if file exists and delete it
+                // kijk of ie bestaat en verwijderem dan
                 if (file_exists($image_path)) {
                     unlink($image_path);
                 }
             }
     
-            // Delete the game from the games table
+            // verwijder de game uit de games table
             $stmt = $this->conn->prepare("DELETE FROM games WHERE id = :id");
             $stmt->bindParam(':id', $game_id, PDO::PARAM_INT);
             $stmt->execute();
     
-            // Commit the transaction
+            // commit maakt het zo alles permanent is 
             $this->conn->commit();
+
     
-            echo "Successfully removed record.";
-            
-            // Redirect to index.php
+            echo "<div id='redirect'>Successfully removed record.</div>";
             echo "<meta http-equiv='refresh' content='0;url=http://localhost/oefenopdracht2/index.php'>";
         } catch (PDOException $e) {
-            // Rollback the transaction on failure
+            // rollback de veranderingen als er iets fout gaat om consistentie te behouden
             $this->conn->rollBack();
-            echo "Error: " . $e->getMessage();
+            echo "<div class='message-error'>Error: </div>" . $e->getMessage();
         }
     }
     
@@ -195,36 +212,36 @@
 
         // controleer of het bestand een afbeelding is of geen afbeelding
 
-        $check = getimagesize($file["tmp_name"]); //line 198
+        $check = getimagesize($file["tmp_name"]); 
         if($check !== false) {
             $uploadOk = 1;
         } else {
-            echo "Bestand is geen afbeelding.";
+            echo "<div class='error-message'>Bestand is geen afbeelding.</div>";
             $uploadOk = 0;
         }
 
 
         // controleer of het bestand al bestaat
         if (file_exists($target_file)) {
-            echo "Sorry, het bestand bestaat al.";
+            echo "<div class='error-message'>Sorry, het bestand bestaat al.</div>";
             $uploadOk = 0;
         } 
         // controleer de bestandsgrootte
         if ($file["size"] > 5000000) {
-            echo "Sorry, je bestand is te groot.";
+            echo "<div class='error-message'>Sorry, je bestand is te groot.</div>";
             $uploadOk = 0;
         }
 
         // sta bepaalde bestandstypen toe
         if($imageFileType != "jpg" && $imageFileType != "webp" && $imageFileType != "png" && $imageFileType != "jpeg"
         && $imageFileType != "gif" ) {
-            echo "Sorry, alleen JPG, JPEG, PNG & GIF bestanden zijn toegestaan.";
+            echo "<div class='error-message'>Sorry, alleen JPG, JPEG, PNG & GIF bestanden zijn toegestaan.</div>";
             $uploadOk = 0;
         }
 
         // controleer of $uploadOk op 0 is gezet door een fout
         if ($uploadOk == 0) {
-            echo "Sorry, je bestand werd niet geüpload.";
+            echo "<div class='error-message'>Sorry, je bestand werd niet geüpload.</div>";
         // als alles goed is, probeer het bestand dan te uploaden
         } else {
         if (move_uploaded_file($file["tmp_name"], $target_file)) {
@@ -238,6 +255,7 @@
     }
 
     public function getGamesFromWishlist($user_id) {
+        // query om de games uit de wishlist van een gebruiker op te halen
         $wishlistQuery = "
         SELECT games.id, games.title, games.image
         FROM games
@@ -245,13 +263,17 @@
         WHERE user_games.user_id = :user_id;
         ";
 
+        // bind de user_id parameter
         $stmt = $this->conn->prepare($wishlistQuery);
         $stmt->bindParam(':user_id', $user_id);
         $stmt->execute();
+        // haal resultaten in elke rij van een array
         $wishlistGames = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    
+        // geef de lijst van games terug
         return $wishlistGames;
     }
+    
 
 }
 ?>

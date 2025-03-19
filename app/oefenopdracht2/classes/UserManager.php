@@ -4,70 +4,79 @@ class UserManager {
 
     private $conn;
 
+    // constructor om de databaseverbinding te starten
     public function __construct($conn) { 
         $this->conn = $conn;
     }
 
-    // Gebruiker invoegen (inserts user with regex validation)
+    // gebruiker invoegen
     public function insertUser($username, $password) {
-        $usernameRegex = "/^[a-zA-Z0-9]{3,25}$/"; // Restored your regex
+        // regex 
+        $usernameRegex = "/^[a-zA-Z0-9]{3,25}$/"; 
 
+        // check username
         if (!preg_match($usernameRegex, $username)) {
-            echo "Invalid username";
+            echo "<div class='error-message'>Invalid username</div>";
             return;
         }
 
         try {
-            $hashedPassword = password_hash($password, PASSWORD_BCRYPT); // Secure password hashing
+            // wachtwoord hashen
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+            // voorbereiden van de query om de gebruiker in te voegen
             $stmt = $this->conn->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
             $stmt->bindParam(':username', $username);
             $stmt->bindParam(':password', $hashedPassword);
             $stmt->execute();
-            echo "User inserted successfully!";
+            echo "<div id='redirect'>Account updated successfully! Redirecting in <span id='countdown'>3</span> seconds...</div>";
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            echo "<div class='error-message'>error: </div>" . $e->getMessage();
         }
     }
 
-    // Gebruiker ophalen (retrieve user by username)
+    // gebruiker ophalen op basis van username
     public function getUser($username) {
         try {
+            // voorbereiden van de query om de gebruiker op te halen
             $stmt = $this->conn->prepare("SELECT * FROM users WHERE username = :username");
             $stmt->bindParam(':username', $username);
             $stmt->execute();
+            // resultaat ophalen als array
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             return $user ?: null;
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            echo "<div class='error-message'>error: </div>" . $e->getMessage();
             exit();
         }
     }
 
+    // gebruiker gegevens bijwerken username, password en email
     public function updateUserCredentials($userId, $newUsername, $newEmail, $newPassword, $confirmPassword) {
         $errorMessage = '';
     
-        // Validate username (only letters/numbers, 3-25 chars)
+        // valideren van de nieuwe gebruikersnaam
         $usernameRegex = "/^[a-zA-Z0-9]{3,25}$/";
         if (!preg_match($usernameRegex, $newUsername)) {
-            return "<div class='error-message' id='error-message'>Invalid username. It must be 3-25 characters long and contain only letters and numbers.</div>";
+            return "<div class='error-message' id='error-message'>invalid username. it must be 3-25 characters long and contain only letters and numbers.</div>";
         }
     
-        // Validate email format
+        // valideren van het emailformaat
         if (!filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
             return "<div class='error-message' id='error-message'>Invalid email format.</div>";
         }
     
-        // Password validation: Check if password is at least 3 characters
+        // wachtwoord validatie: controleren of wachtwoord minimaal 3 tekens bevat
         if (strlen($newPassword) < 3) {
             return "<div class='error-message' id='error-message'>Password must be at least 3 characters long.</div>";
         }
     
-        // Check if passwords match
+        // controleren of wachtwoorden klopt
         if ($newPassword !== $confirmPassword) {
             return "<div class='error-message' id='error-message'>Passwords do not match.</div>";
         }
     
         try {
+            // controleren of de gebruikersnaam al bestaat
             $stmt = $this->conn->prepare("SELECT id FROM users WHERE username = :username AND id != :id");
             $stmt->bindParam(':username', $newUsername);
             $stmt->bindParam(':id', $userId);
@@ -77,6 +86,7 @@ class UserManager {
                 return "<div class='error-message' id='error-message'>Username is already taken.</div>";
             }
     
+            // controleren of het emailadres al bestaat
             $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = :email AND id != :id");
             $stmt->bindParam(':email', $newEmail);
             $stmt->bindParam(':id', $userId);
@@ -88,6 +98,7 @@ class UserManager {
     
             $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
     
+            // gebruikersnaam bijwerken
             if ($newUsername) {
                 $stmt = $this->conn->prepare("UPDATE users SET username = :username WHERE id = :id");
                 $stmt->bindParam(':username', $newUsername);
@@ -95,6 +106,7 @@ class UserManager {
                 $stmt->execute();
             }
     
+            // email bijwerken
             if ($newEmail) {
                 $stmt = $this->conn->prepare("UPDATE users SET email = :email WHERE id = :id");
                 $stmt->bindParam(':email', $newEmail);
@@ -102,6 +114,7 @@ class UserManager {
                 $stmt->execute();
             }
     
+            // wachtwoord bijwerken
             if ($newPassword) {
                 $stmt = $this->conn->prepare("UPDATE users SET password = :password WHERE id = :id");
                 $stmt->bindParam(':password', $hashedPassword);
@@ -109,45 +122,47 @@ class UserManager {
                 $stmt->execute();
             }
     
-            return "<div id='redirect'>Account updated successfully! Redirecting in <span id='countdown'>3</span> seconds...</div>";
+            return "<div id='redirect'>Password updated successfully! Redirecting in <span id='countdown'>3</span> seconds...</div>";
     
         } catch (PDOException $e) {
-            return "<div class='error-message' id='error-message'>Error: " . htmlspecialchars($e->getMessage()) . "</div>";
+            return "<div class='error-message' id='error-message'>error: " . htmlspecialchars($e->getMessage()) . "</div>";
         }
     }
-    
+
     public function deleteGamesFromWishlist($userId) {
         try {
+            // query om games van de verlanglijst te verwijderen
             $sql = "DELETE FROM user_games WHERE user_id = :user_id";
             $stmt = $this->conn->prepare($sql);
             $stmt->bindParam(':user_id', $userId);
             $stmt->execute();
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            echo "<div class='error-message'>error: </div>" . $e->getMessage();
             exit();
         }
     }
 
-    // Delete user and their associated games
+    // verwijder gebruiker en de bijbehorende games
     public function deleteUserAndGames($userId) {
         try {
-            // Delete games from the user's wishlist
+            // verwijder games van de verlanglijst van de gebruiker
             $this->deleteGamesFromWishlist($userId);
 
-            // Now delete the user from the database
+            // verwijder de gebruiker uit de database
             $stmt = $this->conn->prepare("DELETE FROM users WHERE id = :id");
             $stmt->bindParam(':id', $userId);
             $stmt->execute();
 
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            echo "<div class='error-message'>error: </div>" . $e->getMessage();
             exit();
         }
     }
 
-    // Koppeling tussen gebruiker en game maken (link user to a game)
+    // koppeling tussen gebruiker en game maken 
     public function connection_user_games($user_id, $game_id) {
         try {
+            // controleren of de koppeling tussen gebruiker en game al bestaat
             $checkSql = "SELECT COUNT(*) FROM user_games WHERE user_id = :user_id AND game_id = :game_id";
             $checkStmt = $this->conn->prepare($checkSql);
             $checkStmt->bindParam(':user_id', $user_id);
@@ -155,10 +170,11 @@ class UserManager {
             $checkStmt->execute();
 
             if ($checkStmt->fetchColumn() > 0) {
-                echo "Connection between user and game already exists.";
+                echo "<div class='error-message'>Connection between user and game already exists.</div>";
                 return false;
             }
 
+            // de koppeling invoegen in de database
             $sql = "INSERT INTO user_games (user_id, game_id) VALUES (:user_id, :game_id)";
             $stmt = $this->conn->prepare($sql);
             $stmt->bindParam(':user_id', $user_id);
@@ -166,23 +182,26 @@ class UserManager {
             $stmt->execute();
 
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            echo "<div class='error-message'>error: </div>" . $e->getMessage();
             return false;
         }
-    
     }
 
-     public function deleteSpecificGamesFromWishlist($user_id, $game_id) {   
+    // verwijder specifieke games uit de verlanglijst van de gebruiker
+    public function deleteSpecificGamesFromWishlist($user_id, $game_id) {   
          try {
+             // verwijder specifieke game uit de verlanglijst
              $sql = "DELETE FROM user_games WHERE user_id = :user_id AND game_id = :game_id";
              $stmt = $this->conn->prepare($sql);
              $stmt->bindParam(':user_id', $user_id);
              $stmt->bindParam(':game_id', $game_id);
              $stmt->execute();
          } catch (PDOException $e) {
-             echo "Error: " . $e->getMessage();
+             echo "<div class='error-message'>error: </div>" . $e->getMessage();
              exit();
          }
      }
     
 }
+
+?>

@@ -1072,3 +1072,185 @@ h2 {
 #LoggedOut {
     margin-left: -17px;
 }
+
+.containerupdate { 
+    min-height: 185vh;
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    .dropbtn {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="date"] {
+        width: 100%;
+        padding: 8px 10px;
+    }
+
+    .gameGrid {
+        grid-template-columns: 1fr 1fr; 
+        gap: 15px;
+    }
+
+    .sidebar {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .gameImage {
+        width: 100%;
+        height: auto;
+    }
+
+    .gameInfo h1 {
+        font-size: 1.5rem; 
+    }
+
+    .description h2 {
+        font-size: 1.2rem;
+    }
+
+    button#libraryButton {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+
+    .submit,
+    .submit2 {
+        width: 100%;
+        padding: 12px;
+    }
+
+    table th,
+    table td {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    #loader .loading-text {
+        font-size: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        font-size: 12px;
+    }
+
+    .dropbtn {
+        padding: 6px;
+        font-size: 12px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="date"] {
+        padding: 6px 8px;
+    }
+
+    .gameGrid {
+        grid-template-columns: 1fr; /
+    }
+
+    .gameTitle {
+        font-size: 12px;
+    }
+
+    .gameInfo h1 {
+        font-size: 1.2rem;
+    }
+
+    .description h2 {
+        font-size: 1rem;
+    }
+
+    button#libraryButton {
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+
+    .submit,
+    .submit2 {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 100%;
+        margin-right: 0;
+        float: none;
+        margin-bottom: 20px;
+    }
+
+    .gameGrid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        margin-left: 0;
+    }
+
+    .gameSidebarItem {
+        width: 100%;
+    }
+
+    ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    ul li {
+        margin: 5px 0;
+    }
+
+    .gameGrid img {
+        width: 100%;
+        height: auto;
+    }
+
+    .gameTitle {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .gameGrid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        margin-left: 0;
+    }
+
+    #loader .loading-text {
+        font-size: 18px;
+    }
+
+    ul {
+        flex-direction: column;
+    }
+
+    ul li {
+        margin: 5px 0;
+    }
+
+    .gameGrid img {
+        width: 100%;
+        height: auto;
+    }
+
+    .gameTitle {
+        font-size: 12px;
+    }
+}
+

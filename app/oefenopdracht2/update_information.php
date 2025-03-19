@@ -1,6 +1,8 @@
 <?php
+// start de sessie
 session_start();
 
+// automatisch laden van klassen
 spl_autoload_register(function ($class) {
     $file = 'classes/' . $class . '.php';
     if (file_exists($file)) {
@@ -8,6 +10,7 @@ spl_autoload_register(function ($class) {
     }
 });
 
+// controleer of de gebruiker ingelogd is
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
@@ -19,22 +22,40 @@ $userManager = new UserManager($database->getConnection());
 $errorMessage = '';
 $successMessage = '';
 
+// verkrijg de huidige gebruiker
 $userId = $_SESSION['user_id'];
 $currentUser = $userManager->getUser($_SESSION['username']);
 
+// Debug: Toon huidige gebruiker
+echo "Current User: <pre>" . print_r($currentUser, true) . "</pre><br>";
+
+// als de gebruiker niet bestaat, vernietig de sessie en stuur door naar login pagina
 if (!$currentUser) {
     session_destroy();
     header("Location: login.php");
     exit;
 }
 
+// verwerk formulierdata
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $currentPassword = $_POST['current_password'] ?? '';
+    $currentPassword = $_POST['current_password'] ?? ''; // verkrijg het huidige wachtwoord
 
+    // Debug: Toon het ingevoerde wachtwoord
+    echo "Entered Password: " . htmlspecialchars($currentPassword) . "<br>";
+
+    // als de gebruiker de gebruikersnaam wil bijwerken
     if (isset($_POST['update_username'])) {
-        $newUsername = htmlspecialchars($_POST['new_username'] ?? '');
-        
-        if (!empty($newUsername)) {
+        $newUsername = htmlspecialchars($_POST['new_username'] ?? ''); // verkrijg de nieuwe gebruikersnaam
+
+    if (!empty($newUsername)) {
+        // controleer of het huidige wachtwoord overeenkomt met het opgeslagen wachtwoord
+        if (!password_verify($currentPassword, $currentUser['password'])) {
+            // Debug: Toon hash van ingevoerd wachtwoord
+            echo "Entered Password Hash: " . password_hash($currentPassword, PASSWORD_DEFAULT) . "<br>";
+            
+            $errorMessage = "Current password is incorrect!";
+        } else {
+            // update de gebruikersnaam
             $result = $userManager->updateUserCredentials(
                 $userId, 
                 $newUsername,
@@ -43,20 +64,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $currentUser['password']
             );
             if (strpos($result, 'successfully') !== false) {
-                $_SESSION['username'] = $newUsername;
-                $successMessage = "Username updated successfully!";
+                $_SESSION['username'] = $newUsername; // sla de nieuwe gebruikersnaam op in de sessie
+                $successMessage = "Username successfully updated!";
             } else {
                 $errorMessage = $result;
             }
-        } else {
-            $errorMessage = "Username field cannot be empty!";
         }
+    } else {
+        $errorMessage = "Username field cannot be empty!";
     }
+}
 
+    // als de gebruiker de e-mail wil bijwerken
     if (isset($_POST['update_email'])) {
-        $newEmail = htmlspecialchars($_POST['new_email'] ?? '');
-        
-        if (!empty($newEmail) && filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
+        $newEmail = htmlspecialchars($_POST['new_email'] ?? ''); // krijg het nieuwe e-mailadres
+
+    if (!empty($newEmail) && filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
+        // controleer of het huidige wachtwoord overeenkomt met het opgeslagen wachtwoord
+        if (!password_verify($currentPassword, $currentUser['password'])) {
+            // Debug: Toon hash van ingevoerd wachtwoord
+            echo "Entered Password Hash: " . password_hash($currentPassword, PASSWORD_DEFAULT) . "<br>";
+            
+            $errorMessage = "Current password is incorrect!";
+        } else {
+            // update het e-mailadres
             $result = $userManager->updateUserCredentials(
                 $userId, 
                 $currentUser['username'], 
@@ -65,48 +96,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $currentUser['password'] 
             );
             if (strpos($result, 'successfully') !== false) {
-                $successMessage = "Email updated successfully!";
+                $successMessage = "Email successfully updated!";
             } else {
                 $errorMessage = $result;
             }
-        } else {
-            $errorMessage = "Please enter a valid email address!";
-        }
-    }
-
-   // Handle updating the password
-   if (isset($_POST['update_password'])) {
-    $newPassword = $_POST['new_password'] ?? '';
-    $confirmPassword = $_POST['confirm_password'] ?? '';
-
-    if (!empty($newPassword) && !empty($confirmPassword)) {
-        if ($newPassword === $confirmPassword) {
-            // Check if the current password entered matches the stored hashed password
-            if (!password_verify($currentPassword, $currentUser['password'])) {
-                $errorMessage = "Current password is incorrect!";
-            } else {
-                // Proceed with updating the password
-                $result = $userManager->updateUserCredentials(
-                    $userId, 
-                    $currentUser['username'],
-                    $currentUser['email'], 
-                    $newPassword, // New password entered by the user
-                    $confirmPassword // Confirm password entered by the user
-                );
-                if (strpos($result, 'successfully') !== false) {
-                    $successMessage = "Password updated successfully! Redirecting...";
-                    echo "<script>setTimeout(() => window.location.href = 'user.php', 3000);</script>";
-                } else {
-                    $errorMessage = $result;
-                }
-            }
-        } else {
-            $errorMessage = "Passwords do not match!";
         }
     } else {
-        $errorMessage = "All password fields are required!";
+        $errorMessage = "Please enter a valid email address.";
     }
 }
+
+
+   // verwerk het bijwerken van het wachtwoord
+   if (isset($_POST['update_password'])) {
+        $newPassword = $_POST['new_password'] ?? ''; // verkrijg het nieuwe wachtwoord
+        $confirmPassword = $_POST['confirm_password'] ?? ''; // verkrijg het bevestigde wachtwoord
+
+        if (!empty($newPassword) && !empty($confirmPassword)) {
+            if ($newPassword === $confirmPassword) {
+                // Debug: Toon opgeslagen wachtwoordhash
+                echo "Stored Password Hash: " . $currentUser['password'] . "<br>";
+
+                // controleer of het huidige wachtwoord overeenkomt met het opgeslagen wachtwoord
+                if (!password_verify($currentPassword, $currentUser['password'])) {
+                    // Debug: Toon hash van ingevoerd wachtwoord
+                    echo "Entered Password Hash: " . password_hash($currentPassword, PASSWORD_DEFAULT) . "<br>";
+                    
+                    $errorMessage = "Current password is incorrect!";
+                } else {
+                    // werk het wachtwoord bij
+                    $result = $userManager->updateUserCredentials(
+                        $userId, 
+                        $currentUser['username'],
+                        $currentUser['email'], 
+                        $newPassword, 
+                        $confirmPassword 
+                    );
+                    if (strpos($result, 'successfully') !== false) {
+                        $successMessage = "Password successfully changed. Redirecting...";
+                        echo "<script>setTimeout(() => window.location.href = 'user.php', 3000);</script>";
+                    } else {
+                        $errorMessage = $result;
+                    }
+                }
+            } else {
+                $errorMessage = "Passwords don't match!";
+            }
+        } else {
+            $errorMessage = "All password fields must be filled!";
+        }
+    }
 }
 
 ?>
@@ -121,18 +160,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <div class="topcontainer">
-        <ul id="topbar"> 
-            <li class="store"><a class="store1" href="https://store.steampowered.com/" target="_explorer.exe">STORE</a></li>
-            <li class="library2"><a class="submit2" href="./index.php" target="_explorer.exe">LIBRARY</a></li>
-            <li class="community"><a class="community1" href="https://steamcommunity.com/" target="_explorer.exe">COMMUNITY</a></li>
-            <li class="addgame"><a class="submit" href="./add_game.php" target="_explorer.exe">ADD GAME</a></li>
-            <li class="library">ACCOUNT</li> 
-        </ul>
+    <ul id="topbar"> 
+                <li class="store" ><a class="store1" href="https://store.steampowered.com/" target="_explorer.exe">STORE</a></li>
+
+                <li class="library2"><a class="submit2" href="./index.php" target="_explorer.exe">LIBRARY</a></li>
+
+                <li class="community" ><a class="community1" href="https://steamcommunity.com/" target="_explorer.exe">COMMUNITY</a></li>
+
+                <li class="addgame"> <a class="submit" href="./add_game.php" target="_explorer.exe">ADD GAME</a></li>
+
+                <li class="library">ACCOUNT</li> 
+            </ul>
 
         <div class="containerupdate">
             <h2>Update Your Information</h2>
 
             <?php 
+            // toon foutmelding of succesbericht
             if (!empty($errorMessage)) echo "<div id='error-message'>$errorMessage</div>";
             if (!empty($successMessage)) echo "<div id='redirect'>$successMessage</div>";
             ?>
@@ -167,13 +211,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="password" name="confirm_password" required>
 
                 <input type="submit" name="update_password" value="Update Password">
-            </form>
+                <p><a href="user.php">Back to Dashboard</a></p>
 
-            <p><a href="user.php">Back to Dashboard</a></p>
+            </form>
         </div>
     </div>
 
     <script>
+        // verberg berichten na 5 seconden
         setTimeout(() => {
             const errorMessage = document.getElementById('error-message');
             const successMessage = document.getElementById('redirect');
