@@ -29,22 +29,18 @@ if (!$currentUser) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Initialize current password
     $currentPassword = $_POST['current_password'] ?? '';
 
-    // Handle updating the username
     if (isset($_POST['update_username'])) {
         $newUsername = htmlspecialchars($_POST['new_username'] ?? '');
         
-        // You should validate current password only if updating the username or email
         if (!empty($newUsername)) {
-            // If updating the username or email, you don't need to validate the current password
             $result = $userManager->updateUserCredentials(
                 $userId, 
                 $newUsername,
                 $currentUser['email'],
                 $currentUser['password'],
-                $currentUser['password'] // Send the current password (no change needed)
+                $currentUser['password']
             );
             if (strpos($result, 'successfully') !== false) {
                 $_SESSION['username'] = $newUsername;
@@ -57,19 +53,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Handle updating the email
     if (isset($_POST['update_email'])) {
         $newEmail = htmlspecialchars($_POST['new_email'] ?? '');
         
-        // Validate the new email before updating
         if (!empty($newEmail) && filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
-            // Same as username update: no need to validate current password for email update
             $result = $userManager->updateUserCredentials(
                 $userId, 
                 $currentUser['username'], 
                 $newEmail,
                 $currentUser['password'],
-                $currentUser['password'] // Send the current password (no change needed)
+                $currentUser['password'] 
             );
             if (strpos($result, 'successfully') !== false) {
                 $successMessage = "Email updated successfully!";
@@ -81,37 +74,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Handle updating the password
-    if (isset($_POST['update_password'])) {
-        $newPassword = $_POST['new_password'] ?? '';
-        $confirmPassword = $_POST['confirm_password'] ?? '';
+   // Handle updating the password
+   if (isset($_POST['update_password'])) {
+    $newPassword = $_POST['new_password'] ?? '';
+    $confirmPassword = $_POST['confirm_password'] ?? '';
 
-        if (!empty($newPassword) && !empty($confirmPassword)) {
-            if ($newPassword === $confirmPassword) {
-                if (!password_verify($currentPassword, $currentUser['password'])) {
-                    $errorMessage = "Current password is incorrect!";
-                } else {
-                    $result = $userManager->updateUserCredentials(
-                        $userId, 
-                        $currentUser['username'],
-                        $currentUser['email'], 
-                        $newPassword, 
-                        $confirmPassword
-                    );
-                    if (strpos($result, 'successfully') !== false) {
-                        $successMessage = "Password updated successfully! Redirecting...";
-                        echo "<script>setTimeout(() => window.location.href = 'user.php', 3000);</script>";
-                    } else {
-                        $errorMessage = $result;
-                    }
-                }
+    if (!empty($newPassword) && !empty($confirmPassword)) {
+        if ($newPassword === $confirmPassword) {
+            // Check if the current password entered matches the stored hashed password
+            if (!password_verify($currentPassword, $currentUser['password'])) {
+                $errorMessage = "Current password is incorrect!";
             } else {
-                $errorMessage = "Passwords do not match!";
+                // Proceed with updating the password
+                $result = $userManager->updateUserCredentials(
+                    $userId, 
+                    $currentUser['username'],
+                    $currentUser['email'], 
+                    $newPassword, // New password entered by the user
+                    $confirmPassword // Confirm password entered by the user
+                );
+                if (strpos($result, 'successfully') !== false) {
+                    $successMessage = "Password updated successfully! Redirecting...";
+                    echo "<script>setTimeout(() => window.location.href = 'user.php', 3000);</script>";
+                } else {
+                    $errorMessage = $result;
+                }
             }
         } else {
-            $errorMessage = "All password fields are required!";
+            $errorMessage = "Passwords do not match!";
         }
+    } else {
+        $errorMessage = "All password fields are required!";
     }
+}
 }
 
 ?>
@@ -139,7 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <?php 
             if (!empty($errorMessage)) echo "<div id='error-message'>$errorMessage</div>";
-            if (!empty($successMessage)) echo "<div class='success-message'>$successMessage</div>";
+            if (!empty($successMessage)) echo "<div id='redirect'>$successMessage</div>";
             ?>
 
             <form action="" method="post">
@@ -181,7 +176,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script>
         setTimeout(() => {
             const errorMessage = document.getElementById('error-message');
-            const successMessage = document.getElementById('success-message');
+            const successMessage = document.getElementById('redirect');
             if (errorMessage) errorMessage.style.display = 'none';
             if (successMessage) successMessage.style.display = 'none';
         }, 5000);

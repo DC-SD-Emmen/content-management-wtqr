@@ -1,16 +1,18 @@
 <?php
 
 class Game {
-    private $id;
-    private $title; 
-    private $genre; 
-    private $platform; 
-    private $release_year; 
-    private $rating; 
-    private $developer;
-    private $image;
-    private $description;
+    // properties  
+    private $id; // unieke id van de game  
+    private $title; // titel van de game  
+    private $genre; // genre van de game  
+    private $platform; // op welke console of pc t is  
+    private $release_year; // jaar waarin de game uitkwam  
+    private $rating; // beoordeling of cijfer van de game  
+    private $developer; // wie de game gemaakt heeft  
+    private $image; // afbeelding van de game  
+    private $description; // korte omschrijving van de game  
 
+    // id instellen en ophalen  
     public function setID($id) {
         $this->id = $id;
     }
@@ -19,6 +21,7 @@ class Game {
         return $this->id;
     }
 
+    // titel instellen en ophalen  
     public function set_title($title) {
         $this->title = $title;
     }
@@ -27,6 +30,7 @@ class Game {
         return $this->title;
     }
 
+    // genre instellen en ophalen  
     public function set_genre($genre) {
         $this->genre = $genre;
     }
@@ -35,6 +39,7 @@ class Game {
         return $this->genre;
     }
 
+    // platform instellen en ophalen  
     public function set_platform($platform) {
         $this->platform = $platform;
     }
@@ -42,7 +47,8 @@ class Game {
     public function get_platform() { 
         return $this->platform;
     }
- 
+
+    // release jaar instellen en ophalen  
     public function set_release_year($release_year) {
         $this->release_year = $release_year;
     }
@@ -51,6 +57,7 @@ class Game {
         return $this->release_year;
     }
 
+    // rating instellen en ophalen  
     public function set_rating($rating) {
         $this->rating = $rating;
     }
@@ -59,6 +66,7 @@ class Game {
         return $this->rating;
     }
     
+    // developer instellen en ophalen  
     public function set_developer($developer) {
         $this->developer = $developer;
     }
@@ -67,6 +75,7 @@ class Game {
         return $this->developer;
     }
     
+    // afbeelding instellen en ophalen  
     public function set_image($image) {
         $this->image = $image;
     }
@@ -75,6 +84,7 @@ class Game {
         return $this->image;
     }
     
+    // beschrijving instellen en ophalen  
     public function set_description($description) {
         $this->description = $description;
     }
@@ -84,6 +94,4 @@ class Game {
     }
 }
 
-
 ?>
-
