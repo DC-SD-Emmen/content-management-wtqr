@@ -26,9 +26,6 @@ $successMessage = '';
 $userId = $_SESSION['user_id'];
 $currentUser = $userManager->getUser($_SESSION['username']);
 
-// Debug: Toon huidige gebruiker
-echo "Current User: <pre>" . print_r($currentUser, true) . "</pre><br>";
-
 // als de gebruiker niet bestaat, vernietig de sessie en stuur door naar login pagina
 if (!$currentUser) {
     session_destroy();
@@ -36,107 +33,85 @@ if (!$currentUser) {
     exit;
 }
 
-// verwerk formulierdata
+// Verwerk formulierdata
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $currentPassword = $_POST['current_password'] ?? ''; // verkrijg het huidige wachtwoord
+    // Haal het ingevoerde wachtwoord op
+    $password = $_POST['current_password'] ?? ''; 
 
-    // Debug: Toon het ingevoerde wachtwoord
-    echo "Entered Password: " . htmlspecialchars($currentPassword) . "<br>";
+    // *** Haal de meest recente gebruikersgegevens op ***
+    if (!isset($_SESSION['username'])) {
+        die("Error: Gebruiker is niet ingelogd.");
+    }
 
-    // als de gebruiker de gebruikersnaam wil bijwerken
+    $currentUser = $userManager->getUser($_SESSION['username']);
+
+    // Controleer of we daadwerkelijk een gebruiker hebben opgehaald
+    if (!$currentUser || empty($currentUser['password'])) {
+        die("Error: Gebruikersgegevens niet gevonden.");
+    }
+
+    // **Gebruikersnaam bijwerken**
     if (isset($_POST['update_username'])) {
-        $newUsername = htmlspecialchars($_POST['new_username'] ?? ''); // verkrijg de nieuwe gebruikersnaam
-
-    if (!empty($newUsername)) {
-        // controleer of het huidige wachtwoord overeenkomt met het opgeslagen wachtwoord
-        if (!password_verify($currentPassword, $currentUser['password'])) {
-            // Debug: Toon hash van ingevoerd wachtwoord
-            echo "Entered Password Hash: " . password_hash($currentPassword, PASSWORD_DEFAULT) . "<br>";
-            
-            $errorMessage = "Current password is incorrect!";
-        } else {
-            // update de gebruikersnaam
-            $result = $userManager->updateUserCredentials(
-                $userId, 
-                $newUsername,
-                $currentUser['email'],
-                $currentUser['password'],
-                $currentUser['password']
-            );
-            if (strpos($result, 'successfully') !== false) {
-                $_SESSION['username'] = $newUsername; // sla de nieuwe gebruikersnaam op in de sessie
-                $successMessage = "Username successfully updated!";
+        $newUsername = htmlspecialchars($_POST['new_username'] ?? ''); 
+        if (!empty($newUsername)) {
+            // Controleer of het ingevoerde wachtwoord klopt
+            if (!password_verify($password, $currentUser['password'])) {
+                $errorMessage = "Current password is incorrect!";
             } else {
-                $errorMessage = $result;
-            }
-        }
-    } else {
-        $errorMessage = "Username field cannot be empty!";
-    }
+                // Update gebruikersnaam
+                // Check if 'successfully' is found in the $errorMessage string
+                if (strpos($errorMessage, 'successfully') !== false) {
+                    $_SESSION['username'] = $newUsername;
+                    echo "<script>
+                            setTimeout(function() {
+                                window.location.href = 'update_information.php';
+                            }, 2000);
+                        </script>";
 }
 
-    // als de gebruiker de e-mail wil bijwerken
+            }
+        } else {
+            $errorMessage = "Username field cannot be empty!";
+        }
+    }
+
+    // **E-mailadres bijwerken**
     if (isset($_POST['update_email'])) {
-        $newEmail = htmlspecialchars($_POST['new_email'] ?? ''); // krijg het nieuwe e-mailadres
-
-    if (!empty($newEmail) && filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
-        // controleer of het huidige wachtwoord overeenkomt met het opgeslagen wachtwoord
-        if (!password_verify($currentPassword, $currentUser['password'])) {
-            // Debug: Toon hash van ingevoerd wachtwoord
-            echo "Entered Password Hash: " . password_hash($currentPassword, PASSWORD_DEFAULT) . "<br>";
-            
-            $errorMessage = "Current password is incorrect!";
-        } else {
-            // update het e-mailadres
-            $result = $userManager->updateUserCredentials(
-                $userId, 
-                $currentUser['username'], 
-                $newEmail,
-                $currentUser['password'],
-                $currentUser['password'] 
-            );
-            if (strpos($result, 'successfully') !== false) {
-                $successMessage = "Email successfully updated!";
+        $newEmail = htmlspecialchars($_POST['new_email'] ?? ''); 
+        if (!empty($newEmail)) {
+            if (!password_verify($password, $currentUser['password'])) {
+                $errorMessage = "Current password is incorrect!";
             } else {
-                $errorMessage = $result;
+                $errorMessage = $userManager->updateEmail($currentUser['id'], $newEmail);
+                if (strpos($errorMessage, 'successfully') !== false) {
+                    echo "<script>
+                            setTimeout(function() {
+                                window.location.href = 'update_information.php';
+                            }, 2000);
+                          </script>";
+                }
             }
+        } else {
+            $errorMessage = "Please enter a valid email address.";
         }
-    } else {
-        $errorMessage = "Please enter a valid email address.";
     }
-}
 
-
-   // verwerk het bijwerken van het wachtwoord
-   if (isset($_POST['update_password'])) {
-        $newPassword = $_POST['new_password'] ?? ''; // verkrijg het nieuwe wachtwoord
-        $confirmPassword = $_POST['confirm_password'] ?? ''; // verkrijg het bevestigde wachtwoord
-
+    // **Wachtwoord bijwerken**
+    if (isset($_POST['update_password'])) {
+        $newPassword = $_POST['new_password'] ?? ''; 
+        $confirmPassword = $_POST['confirm_password'] ?? ''; 
         if (!empty($newPassword) && !empty($confirmPassword)) {
             if ($newPassword === $confirmPassword) {
-                // Debug: Toon opgeslagen wachtwoordhash
-                echo "Stored Password Hash: " . $currentUser['password'] . "<br>";
-
-                // controleer of het huidige wachtwoord overeenkomt met het opgeslagen wachtwoord
-                if (!password_verify($currentPassword, $currentUser['password'])) {
-                    // Debug: Toon hash van ingevoerd wachtwoord
-                    echo "Entered Password Hash: " . password_hash($currentPassword, PASSWORD_DEFAULT) . "<br>";
-                    
+                if (!password_verify($password, $currentUser['password'])) {
                     $errorMessage = "Current password is incorrect!";
                 } else {
-                    // werk het wachtwoord bij
-                    $result = $userManager->updateUserCredentials(
-                        $userId, 
-                        $currentUser['username'],
-                        $currentUser['email'], 
-                        $newPassword, 
-                        $confirmPassword 
-                    );
-                    if (strpos($result, 'successfully') !== false) {
-                        $successMessage = "Password successfully changed. Redirecting...";
-                        echo "<script>setTimeout(() => window.location.href = 'user.php', 3000);</script>";
-                    } else {
-                        $errorMessage = $result;
+                    $errorMessage = $userManager->updatePassword($currentUser['id'], $newPassword, $confirmPassword);
+                    if (strpos($errorMessage, 'successfully') !== false) {
+                        echo "<script>
+                                setTimeout(function() {
+                                    window.location.href = 'update_information.php';
+                                }, 2000);
+                              </script>";
                     }
                 }
             } else {
@@ -147,6 +122,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 }
+
+
+
 
 ?>
 
