@@ -76,7 +76,7 @@
 
    <div id="form">
          <!-- check of er iets in de dropdown is gekozen ↓  -->
-        <form method="post" onsubmit="return validateSelection()" enctype="multipart/form-data">
+        <form id='addgameform' method="post" onsubmit="return validateSelection()" enctype="multipart/form-data">
 
             <label id="title1" for="title"> Title </label>
             <input type="text" id="title" name="title" required> <br><br>

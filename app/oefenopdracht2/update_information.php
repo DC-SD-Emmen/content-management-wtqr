@@ -175,7 +175,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (!empty($successMessage)) echo "<div id='redirect'>$successMessage</div>";
             ?>
 
-            <form action="" method="post">
+            <form id="formupdate" action="" method="post">
                 <h3>Change Username</h3>
                 <label for="new_username">New Username:</label>
                 <input type="text" name="new_username" value="<?php echo htmlspecialchars($currentUser['username'] ?? ''); ?>" required>
@@ -184,7 +184,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="submit" name="update_username" value="Update Username">
             </form>     
 
-            <form action="" method="post">
+            <form id="formupdate" action="" method="post">
                 <h3>Change E-mail</h3>
                 <label for="new_email">New E-mail:</label>
                 <input type="email" name="new_email" value="<?php echo htmlspecialchars($currentUser['email'] ?? ''); ?>" required>
@@ -193,7 +193,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="submit" name="update_email" value="Update Email">
             </form>
 
-            <form action="" method="post">
+            <form id="formupdate" action="" method="post">
                 <h3>Change Password</h3>
                 <label for="current_password">Current Password:</label>
                 <input type="password" name="current_password" required>

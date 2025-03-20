@@ -672,8 +672,8 @@ button:hover {
 }
 
 button#libraryButton {
-    background-color: #66c0f4;
-    color: #000000;
+    background-color: #44a0d5;
+    color: #ffffff;
     border: none;
     padding: 10px 20px;
     font-size: 16px;
@@ -1007,7 +1007,6 @@ input[type="submit"]:hover {
 #loggedIn {
     border-radius: 8px;
     justify-content: center;
-    margin-left: 37%;
 }
 
 form {
@@ -1076,7 +1075,7 @@ h2 {
 .containerupdate { 
     min-height: 185vh;
 }
-/* General form styling */
+
 form#user {
     width: 100%;
     max-width: 600px;
@@ -1093,175 +1092,210 @@ form#user {
     margin-left: 0%;
 }
 
-/* Tablet and below (max-width: 768px) */
-@media screen and (max-width: 768px) {
-    body {
-        font-size: 14px;
-    }
+.containerupdate {  
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-    .dropbtn {
-        padding: 8px;
-        font-size: 13px;
-    }
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
 
-    input[type="text"],
-    input[type="password"],
-    input[type="email"],
-    input[type="date"] {
-        width: 100%;
-        padding: 8px 10px;
-    }
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
 
-    .gameGrid {
-        grid-template-columns: 1fr 1fr; 
-        gap: 15px;
-    }
+#formupdate {
+    margin-left: 0.5%;
+}
 
-    .sidebar {
-        width: 100%;
-        margin-top: 20px;
-    }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    padding: 0;
+}
 
-    .gameImage {
-        width: 100%;
-        height: auto;
-    }
+.containerupdate {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-    .gameInfo h1 {
-        font-size: 1.5rem; 
-    }
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
 
-    .description h2 {
-        font-size: 1.2rem;
-    }
 
-    button#libraryButton {
-        padding: 12px 15px;
-        font-size: 14px;
-    }
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
 
-    .submit,
-    .submit2 {
-        width: 100%;
-        padding: 12px;
-    }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    padding: 0;
+}
 
-    table th,
-    table td {
-        padding: 10px;
-        font-size: 14px;
-    }
+#form {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    overflow: hidden; 
+}
 
-    #loader .loading-text {
-        font-size: 1.5rem;
-    }
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
 
-    form#user {
-        max-width: 100%;
+#addgameform {
+    margin-left: -0%;
+}
+
+form label {
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+form input[type="text"],
+form input[type="password"],
+form input[type="email"],
+form input[type="date"],
+form input[type="range"],
+form input[type="file"],
+form textarea,
+form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+form textarea {
+    resize: vertical;
+}
+
+form input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+form input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+#deletebuttonForm {
+    margin-left: 10%;
+    margin-right: 20%;
+    background-color: #00000000;
+}
+
+#yesDeletebutton {
+    font-size: 15px;
+    padding: 6px 12px;
+    margin-left: -10.5%;
+    padding: 1%;
+}
+
+@media screen and (max-width: 1024px) {
+    #form {
         padding: 15px;
     }
 
-    input[type="text"],
-    input[type="password"],
-    input[type="email"] {
+    form input[type="text"],
+    form input[type="password"],
+    form input[type="email"],
+    form input[type="range"],
+    form input[type="file"],
+    form textarea,
+    form select {
         padding: 10px;
-        font-size: 1em;
-        margin-bottom: 10px;
-        box-sizing: border-box;
+        margin-bottom: 12px;
+        font-size: 16px;
     }
 
-    input[type="submit"] {
-        width: 100%;
+    form input[type="submit"] {
         padding: 10px;
-        font-size: 1.2em;
-        margin-top: 10px;
-        cursor: pointer;
-    }
-
-    h2 {
-        font-size: 1.5em;
-        text-align: center;
-    }
-
-    .topcontainer {
-        padding: 10px;
-        box-sizing: border-box;
+        font-size: 18px;
     }
 }
 
-/* Mobile devices (max-width: 480px) */
+@media screen and (max-width: 768px) {
+    #form {
+        padding: 10px;
+    }
+
+    form input[type="text"],
+    form input[type="password"],
+    form input[type="email"],
+    form input[type="range"],
+    form input[type="file"],
+    form textarea,
+    form select {
+        padding: 8px;
+        margin-bottom: 10px;
+        font-size: 15px;
+    }
+
+    form input[type="submit"] {
+        padding: 10px;
+        font-size: 16px;
+    }
+}
+
 @media screen and (max-width: 480px) {
     body {
         font-size: 12px;
     }
 
-    .dropbtn {
-        padding: 6px;
-        font-size: 12px;
+    #form {
+        padding: 8px;
     }
 
-    input[type="text"],
-    input[type="password"],
-    input[type="email"],
-    input[type="date"] {
-        padding: 6px 8px;
+    form input[type="text"],
+    form input[type="password"],
+    form input[type="email"],
+    form input[type="range"],
+    form input[type="file"],
+    form textarea,
+    form select {
+        padding: 8px;
+        margin-bottom: 8px;
+        font-size: 14px;
     }
 
-    .gameGrid {
-        grid-template-columns: 1fr;
+    form input[type="submit"] {
+        padding: 8px;
+        font-size: 14px;
     }
 
-    .gameTitle {
-        font-size: 12px;
-    }
-
-    .gameInfo h1 {
-        font-size: 1.2rem;
-    }
-
-    .description h2 {
-        font-size: 1rem;
-    }
-
-    button#libraryButton {
-        padding: 10px 15px;
-        font-size: 12px;
-    }
-
-    .submit,
-    .submit2 {
-        padding: 10px;
-    }
-
-    form#user {
-        max-width: 100%;
-        padding: 10px;
-    }
-
-    input[type="text"],
-    input[type="password"],
-    input[type="email"] {
-        padding: 8px 10px;
-    }
-
-    input[type="submit"] {
-        padding: 8px 10px;
-        font-size: 1em;
-    }
-
-    h2 {
-        font-size: 1.4em;
-        text-align: center;
-    }
-
-    .topcontainer {
-        padding: 10px;
-        box-sizing: border-box;
+    label {
+        font-size: 0.9rem;
     }
 }
 
-/* Media Queries for 1024px screens and below */
-@media (max-width: 1024px) {
+@media screen and (max-width: 1024px) {
     .sidebar {
         width: 100%;
         margin-right: 0;
@@ -1298,7 +1332,6 @@ form#user {
     }
 }
 
-/* Media Queries for smaller screens (768px) */
 @media (max-width: 768px) {
     .sidebar {
         display: none;
@@ -1316,18 +1349,261 @@ form#user {
 
     ul {
         flex-direction: column;
-    }
-
-    ul li {
-        margin: 5px 0;
-    }
-
-    .gameGrid img {
-        width: 100%;
-        height: auto;
+        align-items: center;
     }
 
     .gameTitle {
         font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 12px;
+    }
+
+    .containerupdate {
+        padding: 10px;
+    }
+
+    form input[type="text"],
+    form input[type="password"],
+    form input[type="email"],
+    form input[type="file"],
+    form textarea {
+        padding: 6px 8px;
+        width: 100%;
+    }
+
+    .gameGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .gameTitle {
+        font-size: 12px;
+    }
+
+    .gameInfo h1 {
+        font-size: 1.2rem;
+    }
+
+    .description h2 {
+        font-size: 1rem;
+    }
+
+    button#libraryButton {
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+
+    .submit,
+    .submit2 {
+        padding: 10px;
+    }
+
+    form#user {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="file"],
+    textarea {
+        padding: 8px 10px;
+    }
+
+    input[type="submit"] {
+        padding: 8px 10px;
+        font-size: 1em;
+    }
+
+    h2 {
+        font-size: 1.4em;
+        text-align: center;
+    }
+
+    .topcontainer {
+        padding: 10px;
+        box-sizing: border-box;
+    }
+}
+@media (max-width: 768px) {
+    #top ul {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-left: 0;
+    }
+
+    #top ul li {
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    .whishlistgrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        padding: 10px;
+    }
+
+    .gameGridItem {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .gameImage {
+        max-width: 100%;
+        height: auto;
+        border-radius: 19px;
+    }
+
+    .wishlistempty {
+        font-size: 18px;
+        text-align: center;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    #top ul li {
+        padding: 8px 0;
+    }
+
+    .whishlistgrid {
+        grid-template-columns: 1fr;
+    }
+
+    .gameGridItem {
+        padding: 15px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .gameDetails {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .gameHeader {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .gameDetailImage {
+        width: 80%;
+        max-width: 500px;
+    }
+
+    .gameInfo {
+        padding: 20px;
+    }
+
+    #deletebuttonDiv {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    #deletebuttonForm {
+        display: flex;
+        justify-content: center;
+    }
+
+    #yesDeletebutton {
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .gameDetailImage {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .gameInfo h1 {
+        font-size: 24px;
+    }
+
+    .gameInfo p {
+        font-size: 14px;
+    }
+
+    .description h2 {
+        font-size: 20px;
+    }
+
+    .description p {
+        font-size: 14px;
+    }
+
+    .libraryButton {
+        text-align: center;
+    }
+
+    #libraryButton {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    #deletebuttonDiv {
+        margin-top: 15px;
+    }
+
+    #yesDeletebutton {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gameDetailImage {
+        max-width: 300px;
+    }
+
+    .gameInfo h1 {
+        font-size: 20px;
+    }
+
+    .gameInfo p {
+        font-size: 12px;
+    }
+
+    .description h2 {
+        font-size: 18px;
+    }
+
+    .description p {
+        font-size: 12px;
+    }
+
+    .libraryButton {
+        padding: 10px 0;
+    }
+
+    #libraryButton {
+        width: 90%;
+        max-width: 200px;
+    }
+
+    .add_to_wishlist {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+
+    #deletebuttonDiv {
+        margin-top: 10px;
+    }
+
+    #yesDeletebutton {
+        font-size: 12px;
+        padding: 6px 12px;
     }
 }

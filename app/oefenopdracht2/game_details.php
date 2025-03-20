@@ -64,7 +64,7 @@ if (isset($_SESSION['username']) && $_SESSION['username'] === 'wtqr') {
     <div id="deletebuttonDiv">
         <!-- formulier om het spel te verwijderen -->
         <form id="deletebuttonForm" method="POST">
-            <input type="submit" id="yesDeletebutton" name="deleteButon" value="delete">
+            <input type="submit" id="yesDeletebutton" name="deleteButon" value="Delete">
         </form> 
     </div>
 <?php

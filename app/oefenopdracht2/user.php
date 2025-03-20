@@ -48,7 +48,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
     <h2 class="user">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h2>
     <div id="loggedIn">You are logged in.</div>
 
-    <div style="display: flex; align-items: center; gap: 10px; text-align: center;margin-left: 14.5%;>">
+    <div style="display: flex; align-items: center; gap: 10px; text-align: center;margin-left: 3%;>">
         <p><a id="LoggedOut" href="user.php?action=logout">Logout</a></p>
         <p><a id="Wishlist" href="wishlist.php">Wishlist</as></p>
         <p><a id="UpdateInformation" href="update_information.php">Change Information</a></p>
