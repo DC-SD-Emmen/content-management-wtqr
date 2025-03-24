@@ -68,16 +68,16 @@ public function updateUsername($userId, $newUsername) {
             return "<div class='error-message' id='error-message'>Username is already taken.</div>";
         }
 
-        // Update username
+        // update username
         $stmt = $this->conn->prepare("UPDATE users SET username = :username WHERE id = :id");
         $stmt->bindParam(':username', $newUsername);
         $stmt->bindParam(':id', $userId);
         $stmt->execute();
 
-        // Update sessie nadat name is veranderd
+        // update sessie nadat name is veranderd
         $_SESSION['username'] = $newUsername;
 
-        return "<div id='redirect'>Username updated successfully. Redirecting in <span id='countdown'>3</span> seconds...</div>";
+        return "<div id='redirect'>Username updated successfully.</div>";
 
     } catch (PDOException $e) {
         return "<div class='error-message' id='error-message'>Error: " . htmlspecialchars($e->getMessage()) . "</div>";
@@ -137,13 +137,15 @@ public function updatePassword($userId, $newPassword, $confirmPassword) {
         $stmt->bindParam(':id', $userId);
         $stmt->execute();
 
+        // Update sessie nadat password is veranderd
+        $_SESSION['password'] = $hashedPassword;  // Update session with the new password hash
+
         return "<div id='redirect'>Password updated successfully.</div>";
 
     } catch (PDOException $e) {
-        return "<div class='error-message' id='error-message'>Error: " . htmlspecialchars($e->getMessage()) . "</div>";
+        return "<div class='error-message' id='error-msessage'>Error: " . htmlspecialchars($e->getMessage()) . "</div>";
     }
 }
-
 
 
     public function deleteGamesFromWishlist($userId) {

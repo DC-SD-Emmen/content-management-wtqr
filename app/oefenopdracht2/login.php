@@ -98,7 +98,7 @@ function verify_password($username, $password) {
             </script>
         <?php endif; ?>
 
-        <form action="" method="post">
+        <form id='login_register' action="" method="post">
             <label for="username">Username:</label>
             <input type="text" class="username2" name="username" required>
 
@@ -108,7 +108,7 @@ function verify_password($username, $password) {
             <label for="password">Password:</label>
             <input type="password" class="password2" name="password" required>
 
-            <input type="submit" name="submit" value="login">
+            <input type="submit" name="submit" value="Login">
 
             <p>Don't have an account? <a href="register.php">Register here</a></p>
         </form>

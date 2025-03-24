@@ -135,7 +135,7 @@ function register_user($username, $email, $password) {
             }
         </script>
 
-        <form action="" method="post">
+        <form id='login_register' action="" method="post">
             <label for="username">Username:</label>
             <input type="text" class="username1" name="username" required>
 

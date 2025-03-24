@@ -49,97 +49,105 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!$currentUser || empty($currentUser['password'])) {
         die("Error: No userdata found.");
     }
+}
 
-    // username update
-    if (isset($_POST['update_username'])) {
-        $newUsername = htmlspecialchars($_POST['new_username'] ?? ''); 
-        if (!empty($newUsername)) {
-            // controleer of het ingevoerde wachtwoord klopt
+// username update
+if (isset($_POST['update_username'])) {
+    $newUsername = htmlspecialchars($_POST['new_username'] ?? ''); 
+    if (!empty($newUsername)) {
+        if (!password_verify($password, $currentUser['password'])) {
+            $errorMessage = "Current password is wrong!";
+        } else {
+            // Update username in de database
+            $updateResult = $userManager->updateUsername($currentUser['id'], $newUsername);
+            // controleer of update succesvol was
+            if (strpos($updateResult, 'successfully') !== false) {
+                $_SESSION['username'] = $newUsername; // update sessie
+
+                echo "<div id='redirect'>Username updated successfully.</div>
+                        <script>
+                            setTimeout(function() {
+                                window.location.href = 'update_information.php';
+                            }, 2000);
+                        </script>";
+            } else {
+                $errorMessage = "<div class='error-message' id='error-message'>" . $updateResult . "</div>";
+                echo $errorMessage; 
+            }
+        }
+    } else {
+        $errorMessage = "Please enter a valid username.";
+    }
+}
+
+    // USERNAME VERANDERD NIET MEER,
+    // ALLLE CHECKS WERKEN MAAR HIJ VERANDERD DAN NIET,
+
+    // EMAIL WERKT PERFECT,
+
+    // NADAT DE PASSWORD IS VERANDERD REFRESHED HIJ DE PAGINA GOED, MAAR HIJ WORDT DAN UITGELOGD
+    // MISSCHIEN WORDT DE SESSION ERGENS WEGGEHAALD? GEEN IDEE. 
+
+
+// update email 
+if (isset($_POST['update_email'])) {
+    $newEmail = htmlspecialchars($_POST['new_email'] ?? ''); 
+    if (!empty($newEmail)) {
+        // controleer of het ingevoerde wachtwoord klopt
+        if (!password_verify($password, $currentUser['password'])) {
+            $errorMessage = "Current password is wrong!";
+        } else {
+            // update email
+            $errorMessage = $userManager->updateEmail($currentUser['id'], $newEmail);
+            // controleer of het woord 'successfully' in de foutmelding staat, wat aangeeft dat de update geslaagd is
+            // dat doet strpos ook (string position) die checkt waar de string staat 
+            if (strpos($errorMessage, 'successfully') !== false) {
+                echo "<script>
+                        setTimeout(function() {
+                             window.location.href = 'update_information.php';
+                        }, 2000);
+                    </script>";
+            }
+         }
+    } else {
+         $errorMessage = "Please enter a valid E-mail.";
+    }
+}
+
+// update wachtwoord
+if (isset($_POST['update_password'])) {
+    $newPassword = $_POST['new_password'] ?? ''; 
+    $confirmPassword = $_POST['confirm_password'] ?? ''; 
+    // csontroleer of het wachtwoord en de bevestiging niet leeg zijn
+    if (!empty($newPassword) && !empty($confirmPassword)) {
+        // check of wachtwoorden tzelfde zijn
+        if ($newPassword === $confirmPassword) {
+            // check of de ingevoerde wachtwoord klopt
             if (!password_verify($password, $currentUser['password'])) {
                 $errorMessage = "Current password is wrong!";
             } else {
+                // update wachtwoord
+                $errorMessage = $userManager->updatePassword($currentUser['id'], $newPassword, $confirmPassword);
                 // controleer of het woord 'successfully' in de foutmelding staat, wat aangeeft dat de update geslaagd is
-                // dat doet strpos ook (string position) die checkt waar de string staat                
+                // dat doet strpos ook (string position) die checkt waar de string staat
                 if (strpos($errorMessage, 'successfully') !== false) {
-                    $_SESSION['username'] = $newUsername;
+                   
                     echo "<script>
-                            setTimeout(function() {
+                             setTimeout(function() {
                                 window.location.href = 'update_information.php';
                             }, 2000);
                         </script>";
                 }
             }
         } else {
-            $errorMessage = "The username field cant be empty";
-        }
-    }
-
-    // USERNAME VERANDERD NIET MEER,
-    // ALLLE CHECKS WERKEN MAAR HIJ VERANDERD DAN NIET,
-    // EMAIL WERKT PERFECT,
-    // NADAT DE PASSWORD IS VERANDERD REFRESHED HIJ DE PAGINA GOED, MAAR HIJ WORDT DAN UITGELOGD
-    // MISSCHIEN WORDT DE SESSION ERGENS WEGGEHAALD? GEEN IDEE. 
-
-
-    // update email 
-    if (isset($_POST['update_email'])) {
-        $newEmail = htmlspecialchars($_POST['new_email'] ?? ''); 
-        if (!empty($newEmail)) {
-            // controleer of het ingevoerde wachtwoord klopt
-            if (!password_verify($password, $currentUser['password'])) {
-                $errorMessage = "Current password is wrong!";
-            } else {
-                // update email
-                $errorMessage = $userManager->updateEmail($currentUser['id'], $newEmail);
-                // controleer of het woord 'successfully' in de foutmelding staat, wat aangeeft dat de update geslaagd is
-                // dat doet strpos ook (string position) die checkt waar de string staat 
-                if (strpos($errorMessage, 'successfully') !== false) {
-                    echo "<script>
-                            setTimeout(function() {
-                                window.location.href = 'update_information.php';
-                            }, 2000);
-                          </script>";
-                }
-            }
-        } else {
-            $errorMessage = "Please enter a valid E-mail.";
-        }
-    }
-
-    // update wachtwoord
-    if (isset($_POST['update_password'])) {
-        $newPassword = $_POST['new_password'] ?? ''; 
-        $confirmPassword = $_POST['confirm_password'] ?? ''; 
-        // csontroleer of het wachtwoord en de bevestiging niet leeg zijn
-        if (!empty($newPassword) && !empty($confirmPassword)) {
-            // check of wachtwoorden tzelfde zijn
-            if ($newPassword === $confirmPassword) {
-                // check of de ingevoerde wachtwoord klopt
-                if (!password_verify($password, $currentUser['password'])) {
-                    $errorMessage = "Current password is wrong!";
-                } else {
-                    // update wachtwoord
-                    $errorMessage = $userManager->updatePassword($currentUser['id'], $newPassword, $confirmPassword);
-                    // controleer of het woord 'successfully' in de foutmelding staat, wat aangeeft dat de update geslaagd is
-                    // dat doet strpos ook (string position) die checkt waar de string staat                     
-
-                    if (strpos($errorMessage, 'successfully') !== false) {
-                        $_SESSION['username'] = $newUsername;
-                        echo "<script>
-                                setTimeout(function() {
-                                    window.location.href = 'update_information.php';
-                                }, 2000);
-                            </script>";
-                    }
-                }
-            } else {
-                $errorMessage = "Passwords don't match!";
-            }
-        } else {
-            $errorMessage = "All password fields need to be filled in!";
-        }
+            $errorMessage = "Passwords don't match!";
+         }
+    } else {
+         $errorMessage = "All password fields need to be filled in!";
     }
 }
+
+   
 ?>
 
 <!DOCTYPE html>
@@ -166,14 +174,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <li class="library">ACCOUNT</li> 
             </ul>
 
-        <div class="containerupdate">
-            <h2>Update Your Information</h2>
-
             <?php 
             // toon foutmelding of succesbericht
             if (!empty($errorMessage)) echo "<div id='error-message'>$errorMessage</div>";
             if (!empty($successMessage)) echo "<div id='redirect'>$successMessage</div>";
             ?>
+
+        <div class="containerupdate">
+            <h2>Update Your Information</h2>
 
             <form id="formupdate" action="" method="post">
                 <h3>Change Username</h3>

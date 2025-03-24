@@ -1104,12 +1104,6 @@ h2 {
     margin-bottom: 20px;
 }
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
 #formupdate {
     margin-left: 0.5%;
 }
@@ -1134,11 +1128,32 @@ form {
     flex-direction: column;
 }
 
+#login_register {
+    max-width: 400px; 
+    margin: 0 auto;  
+    padding: 20px;
+    background-color: #00000028;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
+#login_register label {
+    display: block;
+    margin-top: 10px;
+    text-align: left;
+}
+
+#login_register input {
+    width: 98%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 4px;
+}
+
+.username1,
+.username2 {
+    margin-right: 2;
 }
 
 body {
@@ -1216,6 +1231,12 @@ form input[type="submit"]:hover {
     padding: 6px 12px;
     margin-left: -10.5%;
     padding: 1%;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
 @media screen and (max-width: 1024px) {
